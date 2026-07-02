@@ -18,6 +18,11 @@ import { extraerJSON, mensajeDeError } from "@/lib/ia-utils";
 
 const anthropic = new Anthropic();
 
+// Sin esto, Vercel corta la función a los 10s por defecto (Hobby) y esta
+// llamada (Opus + thinking adaptativo) puede tardar más. 60 es el máximo del
+// plan Hobby.
+export const maxDuration = 60;
+
 export async function POST(request: Request) {
   if (!process.env.ANTHROPIC_API_KEY) {
     return Response.json(

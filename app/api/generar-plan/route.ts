@@ -17,6 +17,11 @@ import type { Diagnostico } from "@/lib/tipos";
 // automáticamente. Como esto es código de servidor, la key nunca llega al navegador.
 const anthropic = new Anthropic();
 
+// Sin esto, Vercel corta la función a los 10s por defecto (Hobby) y esta
+// llamada (Opus + thinking adaptativo) tarda 30-60s. 60 es el máximo del plan
+// Hobby; con eso alcanza para el caso normal.
+export const maxDuration = 60;
+
 export async function POST(request: Request) {
   // 1) Sin API key no hay cerebro. Avisamos con un mensaje claro.
   if (!process.env.ANTHROPIC_API_KEY) {

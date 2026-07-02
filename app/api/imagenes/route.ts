@@ -12,6 +12,11 @@ import { extraerJSON, mensajeDeError } from "@/lib/ia-utils";
 
 const anthropic = new Anthropic();
 
+// Sin esto, Vercel corta la función a los 10s por defecto (Hobby) y esta
+// llamada (Opus + thinking adaptativo, a veces con imagen) puede tardar más.
+// 60 es el máximo del plan Hobby.
+export const maxDuration = 60;
+
 const ETIQUETAS: Record<string, string> = {
   perfil: "Foto de perfil / Logo del canal",
   banner: "Banner / Portada del canal",
