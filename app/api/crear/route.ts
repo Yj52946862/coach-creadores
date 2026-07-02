@@ -12,11 +12,8 @@
 // trabaja con el tema tal cual. Corre solo en el servidor (aquí vive la API key).
 // ============================================================================
 
-import Anthropic from "@anthropic-ai/sdk";
 import { promptCrear, TIPOS_CREAR } from "@/lib/prompt-crear";
-import { extraerJSON, mensajeDeError } from "@/lib/ia-utils";
-
-const anthropic = new Anthropic();
+import { anthropic, extraerJSON, mensajeDeError } from "@/lib/ia-utils";
 
 // Sin esto, Vercel corta la función a los 10s por defecto (Hobby) y esta
 // llamada (Opus + thinking adaptativo) puede tardar más. 60 es el máximo del

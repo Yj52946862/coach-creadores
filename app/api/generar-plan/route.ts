@@ -8,14 +8,9 @@
 // La URL de esta función es /api/generar-plan (por la ubicación del archivo).
 // ============================================================================
 
-import Anthropic from "@anthropic-ai/sdk";
 import { PROMPT_MAESTRO } from "@/lib/prompt-maestro";
-import { extraerJSON, mensajeDeError } from "@/lib/ia-utils";
+import { anthropic, extraerJSON, mensajeDeError } from "@/lib/ia-utils";
 import type { Diagnostico } from "@/lib/tipos";
-
-// Un único cliente para toda la app. Lee la API key de process.env.ANTHROPIC_API_KEY
-// automáticamente. Como esto es código de servidor, la key nunca llega al navegador.
-const anthropic = new Anthropic();
 
 // Sin esto, Vercel corta la función a los 10s por defecto (Hobby) y esta
 // llamada (Opus + thinking adaptativo) tarda 30-60s. 60 es el máximo del plan

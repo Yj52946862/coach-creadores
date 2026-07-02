@@ -6,6 +6,30 @@
 
 import Anthropic from "@anthropic-ai/sdk";
 
+// Workaround: en producción (Vercel, Fluid Compute) existe un global
+// `EdgeRuntime` aunque la función corra en Node.js. El SDK de Anthropic lo usa
+// tal cual dentro de un header (`X-Stainless-Arch: other:${EdgeRuntime}`), y
+// si ese valor trae algún carácter fuera de Latin-1, el `Headers` nativo lo
+// rechaza al construirlo (TypeError: ByteString) — tumbando CADA llamada casi
+// al instante, antes de tocar la red. No hay forma de arreglarlo pasando
+// `defaultHeaders` al cliente: el SDK arma y valida ese header antes de leer
+// los headers por defecto. Ocultamos el global ANTES de crear el cliente para
+// que el SDK tome su rama normal de detección de Node. Confirmado que sigue
+// sin arreglarse en la versión más nueva del SDK (0.109.1) al momento de
+// escribir esto.
+try {
+  const g = globalThis as { EdgeRuntime?: unknown };
+  if (typeof g.EdgeRuntime !== "undefined") {
+    g.EdgeRuntime = undefined;
+  }
+} catch {
+  // Best-effort: si por lo que sea no se puede tocar, seguimos igual.
+}
+
+// Un único cliente de Anthropic para todas las rutas (lee ANTHROPIC_API_KEY
+// de las variables de entorno automáticamente).
+export const anthropic = new Anthropic();
+
 // Convierte el texto de Claude en objeto. El prompt pide JSON puro, pero por si
 // acaso viene envuelto en markdown o con texto alrededor, nos quedamos con el
 // primer bloque { ... } y lo parseamos.

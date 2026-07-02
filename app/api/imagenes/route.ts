@@ -6,11 +6,9 @@
 // + medidas + prompt para un generador. Corre solo en el servidor.
 // ============================================================================
 
-import Anthropic from "@anthropic-ai/sdk";
+import type Anthropic from "@anthropic-ai/sdk";
 import { PROMPT_IMAGENES } from "@/lib/prompt-imagenes";
-import { extraerJSON, mensajeDeError } from "@/lib/ia-utils";
-
-const anthropic = new Anthropic();
+import { anthropic, extraerJSON, mensajeDeError } from "@/lib/ia-utils";
 
 // Sin esto, Vercel corta la función a los 10s por defecto (Hobby) y esta
 // llamada (Opus + thinking adaptativo, a veces con imagen) puede tardar más.
