@@ -1,49 +1,1670 @@
+/* ============================================================================
+   globals.css — Estilos mínimos pero ordenados.
+   "Feo pero funcional" no significa incómodo: un formulario claro se completa.
+   ============================================================================ */
+
+/* Sistema visual premium "Creative Coach OS" (modo claro). */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --fondo: #f7f6f2; /* papel cálido */
+  --tarjeta: #ffffff;
+  --texto: #17171a;
+  --texto-suave: #6b6b72;
+  --borde: #eceae5;
+  --acento: #dd3c2d; /* coral-rojo de marca */
+  --acento-suave: #fcece9;
+  --ia: #5a54e0; /* índigo: estados "la IA está pensando" */
+  --error: #d92d20;
+  --chip-bg: #f1f0ec;
+  --chip-hover: #e7e5df;
+  --sombra: 0 1px 2px rgba(20, 20, 30, 0.06), 0 12px 30px rgba(20, 20, 30, 0.08);
+  --glow-acento: rgba(221, 60, 45, 0.3);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-suave: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-press: cubic-bezier(0.34, 1.45, 0.6, 1);
+  --radio: 16px;
 }
 
+/* Modo oscuro premium. */
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --fondo: #0e0e11;
+    --tarjeta: #1a1a1e;
+    --texto: #f1f1f2;
+    --texto-suave: #9a9aa2;
+    --borde: #2a2a30;
+    --acento: #ff5247;
+    --acento-suave: #2a1614;
+    --ia: #8a86f0;
+    --error: #ff6b6b;
+    --chip-bg: #26262b;
+    --chip-hover: #34343a;
+    --sombra: 0 1px 2px rgba(0, 0, 0, 0.4), 0 14px 34px rgba(0, 0, 0, 0.55);
+    --glow-acento: rgba(255, 82, 71, 0.42);
   }
-}
-
-html {
-  height: 100%;
-}
-
-html,
-body {
-  max-width: 100vw;
-  overflow-x: hidden;
-}
-
-body {
-  min-height: 100%;
-  display: flex;
-  flex-direction: column;
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
 }
 
 * {
   box-sizing: border-box;
-  padding: 0;
   margin: 0;
+  padding: 0;
 }
 
-a {
+body {
+  font-family: var(--font-geist), system-ui, -apple-system, "Segoe UI", Roboto,
+    sans-serif;
+  color: var(--texto);
+  background: var(--fondo);
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.contenedor {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 32px 20px 80px;
+}
+
+/* ── Encabezado ── */
+.encabezado {
+  margin-bottom: 28px;
+}
+.encabezado h1 {
+  font-size: 2.3rem;
+  font-weight: 600;
+  line-height: 1.12;
+  letter-spacing: -0.022em;
+}
+.subtitulo {
+  margin-top: 10px;
+  color: var(--texto-suave);
+}
+
+/* ── Formulario ── */
+.formulario {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+.capa {
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  background: var(--tarjeta);
+  padding: 22px 22px 24px;
+  box-shadow: var(--sombra);
+}
+.capa legend {
+  font-weight: 600;
+  color: var(--acento);
+  padding: 0 8px;
+}
+.pregunta {
+  display: block;
+  margin-top: 16px;
+}
+.pregunta:first-of-type {
+  margin-top: 6px;
+}
+.pregunta-texto {
+  display: block;
+  font-weight: 500;
+  margin-bottom: 6px;
+  font-size: 0.95rem;
+}
+select,
+input[type="text"],
+textarea {
+  width: 100%;
+  font: inherit;
   color: inherit;
+  background: var(--tarjeta);
+  border: 1px solid var(--borde);
+  border-radius: 8px;
+  padding: 10px 12px;
+  transition: border-color 0.15s ease, background 0.2s ease;
+}
+textarea {
+  min-height: 70px;
+  resize: vertical;
+}
+select:focus,
+input:focus,
+textarea:focus {
+  outline: 2px solid var(--acento);
+  outline-offset: 1px;
+  border-color: var(--acento);
+}
+
+/* ── Botón y estados ── */
+.boton {
+  font: inherit;
+  font-weight: 500;
+  color: #fff;
+  background: var(--acento);
+  border: none;
+  border-radius: 9999px; /* píldora */
+  padding: 12px 22px;
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(20, 20, 30, 0.12);
+  transition: transform 0.22s var(--ease-out), box-shadow 0.28s var(--ease-out),
+    filter 0.22s var(--ease-out);
+}
+.boton:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.05);
+  box-shadow: 0 8px 22px var(--glow-acento);
+}
+.boton:active {
+  transform: translateY(0) scale(0.96);
+  box-shadow: 0 1px 2px rgba(20, 20, 30, 0.12);
+  transition-duration: 0.09s;
+}
+.boton:disabled {
+  opacity: 0.7;
+  cursor: progress;
+  transform: none;
+  box-shadow: none;
+}
+.aviso-carga {
+  color: var(--texto-suave);
+  font-size: 0.9rem;
+  text-align: center;
+}
+.cargando-bloque {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+.spinner {
+  width: 28px;
+  height: 28px;
+  border: 3px solid var(--borde);
+  border-top-color: var(--ia);
+  border-radius: 50%;
+  animation: girar 0.8s linear infinite;
+}
+@keyframes girar {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.error {
+  color: var(--error);
+  font-weight: 500;
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+}
+.error svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+/* ── Página de resultado ── */
+.enlace-volver {
+  display: inline-block;
+  color: var(--acento);
+  text-decoration: none;
+  font-weight: 500;
+  margin-bottom: 16px;
+}
+.enlace-volver:hover {
+  text-decoration: underline;
+}
+.titulo-plan {
+  font-size: 2.1rem;
+  font-weight: 600;
+  letter-spacing: -0.022em;
+  line-height: 1.14;
+}
+.resumen {
+  font-size: 1.1rem;
+  margin: 12px 0 24px;
+  padding: 16px;
+  background: var(--acento-suave);
+  border-radius: var(--radio);
+}
+.tarjeta {
+  background: var(--tarjeta);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  padding: 24px;
+  margin-bottom: 18px;
+  box-shadow: var(--sombra);
+}
+.tarjeta h2 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+.tarjeta h2 svg {
+  flex-shrink: 0;
+  color: var(--texto-suave);
+}
+.paquete h3,
+.revision h3,
+.resultado-imagen h3 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.paquete h3 svg,
+.revision h3 svg,
+.resultado-imagen h3 svg {
+  flex-shrink: 0;
+  color: var(--texto-suave);
+}
+.ficha-icono {
+  color: var(--texto-suave);
+}
+.paso-tiempo,
+.fase-festejo,
+.paquete-idea,
+.medidas-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.destacado {
+  font-weight: 600;
+  font-size: 1.05rem;
+  margin-bottom: 6px;
+}
+.frase {
+  font-style: italic;
+  color: var(--texto-suave);
+  margin-top: 8px;
+}
+.tarjeta ul {
+  padding-left: 20px;
+}
+.tarjeta ul li {
+  margin-bottom: 6px;
+}
+
+/* ── Fases ── */
+.titulo-fases {
+  font-size: 1.4rem;
+  margin: 28px 0 14px;
+}
+.numero-fase {
+  display: inline-block;
+  background: var(--acento);
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 6px;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+.fase h3 {
+  font-size: 1.15rem;
+}
+.objetivo-fase {
+  color: var(--texto-suave);
+  margin: 8px 0 14px;
+}
+.pasos {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.paso {
+  border-left: 3px solid var(--acento);
+  padding-left: 14px;
+}
+.paso-que {
+  font-weight: 600;
+}
+.paso-como {
+  color: var(--texto-suave);
+  margin: 3px 0 6px;
+}
+.paso-tiempo {
+  font-size: 0.82rem;
+  color: var(--acento);
+  font-weight: 600;
+}
+
+/* ── Primer paso (llamado a la acción) ── */
+.primer-paso {
+  border: 2px solid var(--acento);
+  background: var(--acento-suave);
+}
+
+/* "Tu siguiente paso": la acción protagonista, arriba y dominante. */
+.siguiente-paso {
+  border: 2px solid var(--acento);
+  background: var(--acento-suave);
+}
+.siguiente-paso-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--acento);
+  margin-bottom: 10px;
+}
+.siguiente-paso-texto {
+  font-size: 1.3rem;
+  font-weight: 500;
+  line-height: 1.38;
+  letter-spacing: -0.01em;
+}
+
+/* Título de zona: agrupa secciones en bloques (dashboard, no scroll plano). */
+.zona-titulo {
+  font-size: 1.45rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  margin: 38px 0 16px;
+  padding-left: 2px;
+}
+.vacio {
+  margin-bottom: 14px;
+  color: var(--texto-suave);
+}
+
+/* ── Botones de respuesta rápida (chips) ── */
+.grupo-botones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.sugerencias {
+  margin-bottom: 8px;
+}
+.chip {
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--texto);
+  background: var(--chip-bg);
+  border: none;
+  border-radius: 9999px;
+  padding: 8px 14px;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, transform 0.08s ease;
+}
+.chip:hover {
+  background: var(--chip-hover);
+}
+.chip:active {
+  transform: scale(0.96);
+}
+/* Chip activo: invertido (oscuro), como los filtros de YouTube. */
+.chip-activo,
+.chip-activo:hover {
+  background: var(--texto);
+  color: var(--fondo);
+}
+
+/* ── Métricas (mosaico de números) ── */
+.metricas-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+}
+.metrica {
+  background: var(--acento-suave);
+  border-radius: 10px;
+  padding: 14px;
+}
+.metrica-etiqueta {
+  font-size: 0.78rem;
+  color: var(--texto-suave);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+.metrica-valor {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--acento);
+  margin: 4px 0;
+}
+.metrica-detalle {
+  font-size: 0.85rem;
+  color: var(--texto-suave);
+}
+
+/* ── Ejemplos de títulos ── */
+.lista-titulos {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.lista-titulos li {
+  padding: 10px 12px;
+  background: var(--fondo);
+  border: 1px solid var(--borde);
+  border-radius: 8px;
+  font-weight: 500;
+}
+
+/* ── Ejemplos de guion (diálogos) ── */
+.guion-card {
+  border-left: 3px solid var(--acento);
+  padding-left: 14px;
+  margin-bottom: 16px;
+}
+.guion-card:last-child {
+  margin-bottom: 0;
+}
+.guion-titulo {
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+.guion-texto {
+  white-space: pre-wrap;
+  color: var(--texto);
+  font-size: 0.95rem;
+}
+
+/* ── Ficha rápida (resumen visual de un vistazo) ── */
+.ficha {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+  margin: 0 0 24px;
+}
+.ficha-item {
+  background: var(--tarjeta);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.ficha-icono {
+  font-size: 1.3rem;
+}
+.ficha-label {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--texto-suave);
+}
+.ficha-valor {
+  font-weight: 700;
+  color: var(--acento);
+}
+
+/* ── Gráficos circulares (anillos + dona) ── */
+.nota-estimacion {
+  font-size: 0.8rem;
+  color: var(--texto-suave);
+  margin-bottom: 16px;
+}
+.anillos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 18px;
+}
+.anillo {
+  text-align: center;
+}
+.anillo-svg {
+  width: 92px;
+  height: 92px;
+}
+.anillo-fondo {
+  fill: none;
+  stroke: var(--borde);
+  stroke-width: 8;
+}
+.anillo-progreso {
+  fill: none;
+  stroke: var(--acento);
+  stroke-width: 8;
+  stroke-linecap: round;
+}
+.anillo-pct {
+  font-size: 19px;
+  font-weight: 700;
+  fill: var(--acento);
+}
+.anillo-nombre {
+  font-weight: 600;
+  font-size: 0.85rem;
+  margin-top: 4px;
+}
+.anillo-nota {
+  font-size: 0.78rem;
+  color: var(--texto-suave);
+  line-height: 1.35;
+}
+.publico-potencial {
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px solid var(--borde);
+  font-size: 0.95rem;
+}
+
+/* Dona (mezcla de contenido) */
+.dona-wrap {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  flex-wrap: wrap;
+}
+.dona-svg {
+  width: 140px;
+  height: 140px;
+  flex-shrink: 0;
+}
+.dona-leyenda {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+.dona-leyenda li {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 0.95rem;
+}
+.dona-punto {
+  width: 14px;
+  height: 14px;
+  border-radius: 4px;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+/* ── Herramientas (apps con link de descarga) ── */
+.lista-herramientas {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.herramienta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  background: var(--fondo);
+  border: 1px solid var(--borde);
+  border-radius: 10px;
+}
+.herramienta-info {
+  display: flex;
+  flex-direction: column;
+}
+.herramienta-nombre {
+  font-weight: 600;
+}
+.herramienta-para {
+  font-size: 0.85rem;
+  color: var(--texto-suave);
+}
+.herramienta-link {
+  flex-shrink: 0;
+  background: var(--acento);
+  color: #fff;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.9rem;
+  padding: 9px 14px;
+  border-radius: 8px;
+  white-space: nowrap;
+}
+.herramienta-link:hover {
+  opacity: 0.9;
+}
+
+/* ── Calculador de avance ── */
+.avance {
+  background: var(--tarjeta);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  padding: 16px 18px;
+  margin-bottom: 22px;
+}
+.avance-cabecera {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 9px;
+}
+.avance-titulo {
+  font-weight: 700;
+}
+.avance-num {
+  font-size: 0.9rem;
+  color: var(--acento);
+  font-weight: 700;
+}
+.avance-barra {
+  height: 12px;
+  background: var(--borde);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.avance-relleno {
+  height: 100%;
+  background: var(--acento);
+  border-radius: 999px;
+  transition: width 0.4s ease;
+}
+.avance-msg {
+  font-size: 0.85rem;
+  color: var(--texto-suave);
+  margin-top: 9px;
+}
+
+/* Casillas en los pasos */
+.paso-check {
+  display: flex;
+  gap: 11px;
+  align-items: flex-start;
+  cursor: pointer;
+}
+.paso-check input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  margin-top: 2px;
+  flex-shrink: 0;
+  accent-color: var(--acento);
+  cursor: pointer;
+}
+.paso-hecho .paso-que {
+  text-decoration: line-through;
+  color: var(--texto-suave);
+}
+.fase-conteo {
+  font-size: 0.8rem;
+  color: var(--texto-suave);
+  font-weight: 600;
+  margin-left: 8px;
+}
+.fase-completa {
+  border-color: var(--acento);
+}
+.fase-festejo {
+  margin-top: 12px;
+  font-weight: 600;
+  color: var(--acento);
+}
+
+/* ── Asistente "tu primer video" ── */
+.asistente {
+  border: 2px solid var(--acento);
+}
+.asistente .boton {
+  margin-top: 12px;
+}
+.asistente-instruccion {
+  font-weight: 600;
+  margin: 6px 0 12px;
+}
+.ideas-grid {
+  display: grid;
+  gap: 14px;
+}
+.idea-card {
+  border: 1px solid var(--borde);
+  border-radius: 10px;
+  padding: 16px;
+  background: var(--fondo);
+}
+.idea-titulo {
+  font-weight: 700;
+  font-size: 1.05rem;
+}
+.idea-gancho {
+  margin: 8px 0;
+}
+.idea-porque {
+  color: var(--texto-suave);
+  font-size: 0.9rem;
+  margin-bottom: 12px;
+}
+.boton-secundario {
+  background: #fff;
+  color: var(--acento);
+  border: 1px solid var(--acento);
+}
+.paquete h3 {
+  margin: 18px 0 8px;
+  font-size: 1.05rem;
+}
+.paquete-idea {
+  padding: 10px 12px;
+  background: var(--acento-suave);
+  border-radius: 8px;
+}
+.pasos-edicion {
+  padding-left: 20px;
+}
+.pasos-edicion li {
+  margin-bottom: 6px;
+}
+
+/* ── Revisa tu contenido con IA ── */
+.revisar textarea {
+  margin-top: 12px;
+}
+.revisar .boton {
+  margin-top: 12px;
+}
+.revision-puntaje {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 18px 0 10px;
+}
+.revision-num {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: var(--acento);
+  white-space: nowrap;
+}
+.revision-num small {
+  font-size: 0.9rem;
+  color: var(--texto-suave);
+  font-weight: 600;
+}
+.revision-puntaje .avance-barra {
+  flex: 1;
+}
+.revision-veredicto {
+  font-weight: 500;
+}
+.revision h3 {
+  margin: 16px 0 8px;
+  font-size: 1.05rem;
+}
+
+/* ── Estilo YouTube: animaciones, foco y barra de carga ── */
+@keyframes aparecer {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+/* Las capas del onboarding entran con una aparición suave al cambiar de paso. */
+.capa {
+  animation: aparecer 0.42s var(--ease-out) both;
+}
+
+/* Piezas clicables: elevación + glow al pasar el cursor (cinematografía suave). */
+.idea-card,
+.herramienta,
+.ficha-item,
+.metrica {
+  transition: transform 0.28s var(--ease-out), box-shadow 0.28s var(--ease-out),
+    border-color 0.22s var(--ease-out);
+}
+.idea-card:hover,
+.herramienta:hover,
+.ficha-item:hover,
+.metrica:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 2px 5px rgba(20, 20, 30, 0.05), 0 16px 32px rgba(20, 20, 30, 0.13);
+  border-color: var(--acento);
+}
+
+/* Foco visible al saltar de botón en botón con teclado (estilo YouTube). */
+.boton:focus-visible,
+.chip:focus-visible,
+.herramienta-link:focus-visible,
+.enlace-volver:focus-visible,
+a:focus-visible,
+select:focus-visible,
+input:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--acento);
+  outline-offset: 2px;
+}
+
+/* Botón secundario (contorno): arreglado para modo oscuro. */
+.boton-secundario {
+  background: var(--tarjeta);
+}
+.boton-secundario:hover {
+  background: var(--acento-suave);
+  filter: none;
+}
+
+/* Barra de carga roja deslizándose arriba, como la de YouTube. */
+.barra-carga-top {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  width: 35%;
+  background: var(--ia);
+  border-radius: 0 4px 4px 0;
+  z-index: 9999;
+  animation: cargaTop 1s ease-in-out infinite;
+}
+@keyframes cargaTop {
+  0% {
+    left: -35%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+/* ── Porcentaje de avance mientras la IA piensa ── */
+.progreso {
+  margin-top: 10px;
+}
+.progreso-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.progreso-msg {
+  flex: 1;
+  color: var(--texto-suave);
+  font-size: 0.9rem;
+}
+.progreso-pct {
+  font-weight: 700;
+  color: var(--ia);
+  font-variant-numeric: tabular-nums;
+}
+.progreso-pista {
+  height: 6px;
+  background: var(--borde);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.progreso-relleno {
+  height: 100%;
+  background: var(--ia);
+  border-radius: 999px;
+  transition: width 0.3s ease;
+}
+
+/* Campo de edad exacta (más angosto que el resto). */
+.edad-exacta {
+  max-width: 130px;
+}
+
+/* ── Imágenes del canal ── */
+.imagenes .boton {
+  margin-top: 14px;
+}
+.subir-ref {
+  display: inline-flex;
+  align-items: center;
+  margin-top: 14px;
+  padding: 10px 16px;
+  border: 1px dashed var(--borde);
+  border-radius: 9999px;
+  cursor: pointer;
+  color: var(--texto-suave);
+  font-size: 0.9rem;
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+.subir-ref:hover {
+  border-color: var(--acento);
+  color: var(--acento);
+}
+.subir-ref input[type="file"] {
+  display: none;
+}
+.ref-preview {
+  display: block;
+  max-width: 160px;
+  max-height: 160px;
+  margin-top: 12px;
+  border-radius: 10px;
+  border: 1px solid var(--borde);
+  object-fit: cover;
+}
+.resultado-imagen h3 {
+  margin: 16px 0 8px;
+  font-size: 1.05rem;
+}
+.medidas-badge {
+  display: inline-block;
+  background: var(--acento-suave);
+  color: var(--acento);
+  font-weight: 600;
+  font-size: 0.85rem;
+  padding: 6px 12px;
+  border-radius: 9999px;
+  margin-top: 16px;
+}
+.prompt-box {
+  background: var(--fondo);
+  border: 1px solid var(--borde);
+  border-radius: 10px;
+  padding: 14px;
+}
+.prompt-box .guion-texto {
+  margin-bottom: 12px;
+}
+.prompt-box .boton-secundario {
+  padding: 8px 16px;
+  font-size: 0.9rem;
+}
+
+/* ============================================================
+   Onboarding wizard: progreso, intro de paso y navegación.
+   (Estos estilos faltaban: el wizard funcionaba pero sin pulir.)
+   ============================================================ */
+.onboarding-progreso {
+  margin: 4px 0 28px;
+}
+.onboarding-pasos-texto {
+  font-size: 0.76rem;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--texto-suave);
+  margin-bottom: 10px;
+}
+.onboarding-barra {
+  height: 6px;
+  background: var(--chip-bg);
+  border-radius: 9999px;
+  overflow: hidden;
+}
+.onboarding-relleno {
+  height: 100%;
+  background: var(--acento);
+  border-radius: 9999px;
+  /* El relleno se desliza suave al cambiar de paso (cinematográfico). */
+  transition: width 0.55s var(--ease-out);
+}
+.paso-intro {
+  color: var(--texto-suave);
+  font-size: 1rem;
+  line-height: 1.55;
+  max-width: 52ch;
+  margin: 0 0 22px;
+}
+.onboarding-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 28px;
+}
+.onboarding-nav .boton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+/* ============================================================
+   Motion premium: aparición al hacer scroll (escalonada),
+   elevación de tarjetas y glow suave. Sutil, no infantil.
+   ============================================================ */
+
+/* Los bloques de /resultado entran con fade + leve subida cuando aparecen en
+   pantalla. Empiezan ocultos vía CSS (sin parpadeo); el observador los revela. */
+.con-reveal .resumen,
+.con-reveal .ficha,
+.con-reveal .avance,
+.con-reveal .tarjeta,
+.con-reveal .zona-titulo,
+.con-reveal .titulo-fases {
+  opacity: 0;
+  transform: translateY(22px);
+  transition: opacity 0.6s var(--ease-out), transform 0.6s var(--ease-out),
+    box-shadow 0.32s var(--ease-out), border-color 0.3s var(--ease-out);
+}
+.con-reveal .revelado {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Elevación al pasar el cursor: SOLO sombra (no movemos la tarjeta, para no
+   pelear con la animación de entrada). "Card elevation" premium. */
+.con-reveal .tarjeta:hover {
+  box-shadow: 0 2px 6px rgba(20, 20, 30, 0.07), 0 22px 48px rgba(20, 20, 30, 0.14);
+}
+/* Las tarjetas con piezas interactivas adentro no se elevan en su contenedor;
+   sus piezas internas (idea-card, herramienta…) sí lo hacen. */
+.con-reveal .asistente:hover,
+.con-reveal .revisar:hover,
+.con-reveal .imagenes:hover {
+  box-shadow: var(--sombra);
+}
+
+/* Glow coral suave y permanente en la acción protagonista. */
+.siguiente-paso {
+  box-shadow: 0 1px 2px rgba(20, 20, 30, 0.06), 0 16px 40px var(--glow-acento);
+}
+
+/* Estado vacío con una aparición suave (animated empty state). */
+.vacio {
+  animation: aparecer 0.5s var(--ease-out) both;
+}
+
+/* Accesibilidad: si la persona pidió menos movimiento, lo desactivamos. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .con-reveal .resumen,
+  .con-reveal .ficha,
+  .con-reveal .avance,
+  .con-reveal .tarjeta,
+  .con-reveal .zona-titulo,
+  .con-reveal .titulo-fases {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
+/* ============================================================
+   PLATAFORMA: contenedor ancho, navegación global y hub.
+   ============================================================ */
+
+/* Contenedor más ancho para el hub y el estudio de herramientas. */
+.contenedor-ancho {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 40px 20px 88px;
+}
+
+/* ── Navegación global (sticky arriba, en layout) ── */
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--fondo);
+  border-bottom: 1px solid var(--borde);
+}
+.nav-inner {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+.nav-marca {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--texto);
+  text-decoration: none;
+  font-size: 1.02rem;
+  flex-shrink: 0;
+}
+.nav-marca-icono {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 9px;
+  background: var(--acento);
+  color: #fff;
+}
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.nav-link {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 13px;
+  border-radius: 9999px;
+  color: var(--texto-suave);
+  text-decoration: none;
+  font-size: 0.93rem;
+  font-weight: 500;
+  white-space: nowrap;
+  transition: color 0.2s var(--ease-out), background 0.2s var(--ease-out);
+}
+.nav-link:hover {
+  color: var(--texto);
+  background: var(--chip-bg);
+}
+.nav-link-activo {
+  color: var(--acento);
+  background: var(--acento-suave);
+}
+
+/* ── Hub de inicio ── */
+.hub-hero {
+  text-align: center;
+  max-width: 660px;
+  margin: 12px auto 42px;
+}
+.hub-eyebrow {
+  display: inline-block;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--acento);
+  margin-bottom: 14px;
+}
+.hub-hero h1 {
+  font-size: 2.6rem;
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -0.025em;
+}
+.hub-sub {
+  margin-top: 14px;
+  color: var(--texto-suave);
+  font-size: 1.08rem;
+}
+
+/* Los dos caminos */
+.hub-caminos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+  gap: 20px;
+  margin-bottom: 22px;
+}
+.camino-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 7px;
+  padding: 28px;
+  background: var(--tarjeta);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  box-shadow: var(--sombra);
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.32s var(--ease-out), box-shadow 0.32s var(--ease-out),
+    border-color 0.3s var(--ease-out);
+}
+.camino-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 2px 6px rgba(20, 20, 30, 0.07), 0 26px 52px rgba(20, 20, 30, 0.15);
+  border-color: var(--acento);
+}
+.camino-primario {
+  border: 1.5px solid var(--acento);
+  background: linear-gradient(180deg, var(--acento-suave), transparent 55%),
+    var(--tarjeta);
+}
+.camino-icono {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  background: var(--acento-suave);
+  color: var(--acento);
+  margin-bottom: 6px;
+}
+.camino-tag {
+  font-size: 0.74rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--texto-suave);
+}
+.camino-card h2 {
+  font-size: 1.4rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+.camino-card p {
+  color: var(--texto-suave);
+  font-size: 0.98rem;
+}
+.camino-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 10px;
+  font-weight: 600;
+  color: var(--acento);
+}
+.camino-cta svg {
+  transition: transform 0.25s var(--ease-out);
+}
+.camino-card:hover .camino-cta svg {
+  transform: translateX(4px);
+}
+
+/* Acceso a Mi Proyecto */
+.hub-proyecto {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 18px 22px;
+  margin-bottom: 12px;
+  background: var(--tarjeta);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  box-shadow: var(--sombra);
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.28s var(--ease-out), box-shadow 0.28s var(--ease-out),
+    border-color 0.28s var(--ease-out);
+}
+.hub-proyecto:hover {
+  transform: translateY(-2px);
+  border-color: var(--acento);
+}
+.hub-proyecto-icono {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: var(--chip-bg);
+  color: var(--texto-suave);
+  flex-shrink: 0;
+}
+.hub-proyecto-texto {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.hub-proyecto-texto span {
+  color: var(--texto-suave);
+  font-size: 0.92rem;
+}
+.hub-proyecto-flecha {
+  margin-left: auto;
+  color: var(--texto-suave);
+  flex-shrink: 0;
+}
+
+/* Vistazo de herramientas */
+.hub-herramientas-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.hub-herramienta-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 15px;
+  background: var(--tarjeta);
+  border: 1px solid var(--borde);
+  border-radius: 9999px;
+  color: var(--texto);
+  text-decoration: none;
+  font-size: 0.92rem;
+  font-weight: 500;
+  transition: transform 0.22s var(--ease-out), border-color 0.22s var(--ease-out),
+    background 0.22s var(--ease-out);
+}
+.hub-herramienta-chip svg {
+  color: var(--acento);
+}
+.hub-herramienta-chip:hover {
+  transform: translateY(-2px);
+  border-color: var(--acento);
+  background: var(--acento-suave);
+}
+
+@media (max-width: 560px) {
+  .nav-inner {
+    padding: 10px 14px;
+    gap: 6px;
+  }
+  .nav-link {
+    padding: 7px 9px;
+    font-size: 0.86rem;
+  }
+  .nav-marca-texto {
+    display: none;
+  }
+  .hub-hero h1 {
+    font-size: 2.05rem;
+  }
+}
+
+/* ============================================================
+   ESTUDIO DE HERRAMIENTAS + piezas compartidas de herramientas.
+   ============================================================ */
+.estudio-hero {
+  text-align: center;
+  max-width: 640px;
+  margin: 12px auto 18px;
+}
+.estudio-hero h1 {
+  font-size: 2.3rem;
+  font-weight: 600;
+  line-height: 1.12;
+  letter-spacing: -0.022em;
+}
+.estudio-perfil-nota {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: fit-content;
+  max-width: 100%;
+  margin: 0 auto 26px;
+  padding: 9px 16px;
+  background: var(--chip-bg);
+  border-radius: 9999px;
+  color: var(--texto-suave);
+  font-size: 0.9rem;
+  text-align: center;
+}
+.estudio-perfil-nota svg {
+  flex-shrink: 0;
+  color: var(--acento);
+}
+.estudio-perfil-cta {
+  text-decoration: none;
+  color: var(--texto);
+  transition: background 0.22s var(--ease-out);
+}
+.estudio-perfil-cta:hover {
+  background: var(--chip-hover);
+}
+
+/* Rejilla de tarjetas de herramienta */
+.tools-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(224px, 1fr));
+  gap: 14px;
+}
+.tool-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  text-align: left;
+  padding: 20px;
+  background: var(--tarjeta);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  box-shadow: var(--sombra);
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+  transition: transform 0.28s var(--ease-out), box-shadow 0.28s var(--ease-out),
+    border-color 0.24s var(--ease-out), background 0.24s var(--ease-out);
+}
+.tool-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 2px 6px rgba(20, 20, 30, 0.07), 0 20px 42px rgba(20, 20, 30, 0.13);
+  border-color: var(--acento);
+}
+.tool-card-activa {
+  border: 1.5px solid var(--acento);
+  background: linear-gradient(180deg, var(--acento-suave), transparent 60%),
+    var(--tarjeta);
+}
+.tool-card-icono {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: var(--acento-suave);
+  color: var(--acento);
+  margin-bottom: 4px;
+}
+.tool-card-nombre {
+  font-weight: 600;
+  font-size: 1.05rem;
+  letter-spacing: -0.01em;
+}
+.tool-card-desc {
+  color: var(--texto-suave);
+  font-size: 0.9rem;
+  line-height: 1.45;
+  flex-grow: 1;
+}
+.tool-card-cta {
+  margin-top: 10px;
+  color: var(--acento);
+  font-weight: 600;
+  font-size: 0.86rem;
+}
+
+/* Panel de la herramienta activa */
+.tool-panel {
+  margin-top: 26px;
+}
+.tool-vacio {
+  text-align: center;
+  color: var(--texto-suave);
+}
+
+/* Toggle "Personalizar con mi proyecto" (todas las herramientas) */
+.toggle-perfil {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 6px 0 12px;
+  color: var(--texto-suave);
+  font-size: 0.92rem;
+  cursor: pointer;
+  user-select: none;
+}
+.toggle-perfil input {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--acento);
+  cursor: pointer;
+}
+
+/* Pestañas de fuente del revisor (texto / archivo / Drive) */
+.fuente-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 4px 0 12px;
+}
+.fuente-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 13px;
+  border-radius: 9999px;
+  border: 1px solid var(--borde);
+  background: var(--tarjeta);
+  color: var(--texto-suave);
+  font: inherit;
+  font-size: 0.88rem;
+  cursor: pointer;
+  transition: color 0.2s var(--ease-out), border-color 0.2s var(--ease-out),
+    background 0.2s var(--ease-out);
+}
+.fuente-tab:hover {
+  color: var(--texto);
+}
+.fuente-tab-activo {
+  color: var(--acento);
+  border-color: var(--acento);
+  background: var(--acento-suave);
+}
+.fuente-archivo {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.fuente-archivo-preview {
+  background: var(--fondo);
+  border: 1px solid var(--borde);
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 0.85rem;
+  color: var(--texto-suave);
+  white-space: pre-wrap;
+}
+.fuente-drive {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Aviso suave (p. ej. el placeholder de Drive) */
+.aviso {
+  background: var(--acento-suave);
+  color: var(--texto);
+  padding: 12px 14px;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  margin: 4px 0;
+}
+
+/* Imagen a revisar */
+.revisar-visual {
+  margin: 4px 0;
+}
+
+/* Hashtags de la descripción */
+.hashtags-fila {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 12px;
+}
+
+/* Botón de guardar en herramientas */
+.guardar-boton {
+  margin-top: 14px;
+  font-size: 0.9rem;
+}
+
+@media (max-width: 560px) {
+  .estudio-hero h1 {
+    font-size: 1.95rem;
+  }
+  .tools-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ============================================================
+   MI PROYECTO: estado vacío, intro de zona y "Guardado".
+   ============================================================ */
+.proyecto-vacio {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 12px;
+  max-width: 540px;
+  margin: 12px auto 24px;
+  padding: 40px 28px;
+}
+.proyecto-vacio h1 {
+  font-size: 1.8rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+.proyecto-vacio p {
+  color: var(--texto-suave);
+}
+.proyecto-vacio .boton {
+  margin-top: 8px;
   text-decoration: none;
 }
 
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
-  }
+/* Intro corta bajo un título de zona */
+.zona-intro {
+  color: var(--texto-suave);
+  margin: 0 0 18px;
+  max-width: 60ch;
+}
+
+/* Lo guardado */
+.lista-guardados {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.guardado-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--borde);
+}
+.guardado-item:last-child {
+  border-bottom: none;
+}
+.guardado-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.guardado-tipo {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--acento);
+}
+.guardado-titulo {
+  font-weight: 600;
+  font-size: 0.98rem;
+}
+.guardado-contenido {
+  color: var(--texto-suave);
+  font-size: 0.9rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  white-space: pre-wrap;
+}
+.guardado-borrar {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border: none;
+  background: transparent;
+  color: var(--texto-suave);
+  border-radius: 9px;
+  cursor: pointer;
+  transition: background 0.2s var(--ease-out), color 0.2s var(--ease-out);
+}
+.guardado-borrar:hover {
+  background: var(--chip-bg);
+  color: var(--error);
 }

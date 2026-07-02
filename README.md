@@ -1,36 +1,46 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Coach para creadores
 
-## Getting Started
+Una web que toma el diagnóstico de alguien que quiere empezar como creador de
+contenido y le devuelve un **plan personalizado, por fases, paso a paso** —
+anclado en su nicho, su zona y sus límites reales— y lo acompaña a avanzar.
 
-First, run the development server:
+El contexto maestro del proyecto está en [`CLAUDE.md`](./CLAUDE.md). La pieza
+estrella es el **prompt maestro** en [`lib/prompt-maestro.ts`](./lib/prompt-maestro.ts).
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Cómo correrlo
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+1. Instala dependencias (una sola vez):
+   ```bash
+   npm install
+   ```
+2. Crea el archivo `.env.local` con tu API key de Anthropic:
+   ```
+   ANTHROPIC_API_KEY=sk-ant-...
+   ```
+   La obtienes en <https://console.anthropic.com/> → Settings → API Keys.
+   La API es de pago por uso: necesitas agregar saldo.
+3. Arranca el servidor de desarrollo:
+   ```bash
+   npm run dev
+   ```
+4. Abre <http://localhost:3000>.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Mapa del código
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- `app/page.tsx` — el formulario del diagnóstico.
+- `app/api/generar-plan/route.ts` — llama a Claude con el prompt maestro y
+  devuelve el plan en JSON. **Aquí vive la API key (solo en el servidor).**
+- `app/resultado/page.tsx` — dibuja el plan (tarjetas, gráficos, herramientas)
+  y el calculador de avance.
+- `lib/prompt-maestro.ts` — **el cerebro**: las instrucciones del coach. Edítalo
+  para mejorar la calidad de los planes.
+- `lib/tipos.ts` — las "formas" de los datos (diagnóstico y plan).
+- `lib/herramientas.ts` — links oficiales de descarga de las apps.
 
-## Learn More
+## Notas
 
-To learn more about Next.js, take a look at the following resources:
+- **Sin base de datos:** el plan y el avance se guardan en `localStorage` (en tu
+  navegador), así que persisten en ese dispositivo sin cuentas.
+- **Modelo:** Claude Opus 4.8.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Hecho con [Next.js](https://nextjs.org).
