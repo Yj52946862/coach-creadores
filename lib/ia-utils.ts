@@ -7,23 +7,41 @@
 import Anthropic from "@anthropic-ai/sdk";
 
 // Workaround: en producción (Vercel, Fluid Compute) existe un global
-// `EdgeRuntime` aunque la función corra en Node.js. El SDK de Anthropic lo usa
-// tal cual dentro de un header (`X-Stainless-Arch: other:${EdgeRuntime}`), y
-// si ese valor trae algún carácter fuera de Latin-1, el `Headers` nativo lo
-// rechaza al construirlo (TypeError: ByteString) — tumbando CADA llamada casi
-// al instante, antes de tocar la red. No hay forma de arreglarlo pasando
-// `defaultHeaders` al cliente: el SDK arma y valida ese header antes de leer
-// los headers por defecto. Ocultamos el global ANTES de crear el cliente para
-// que el SDK tome su rama normal de detección de Node. Confirmado que sigue
-// sin arreglarse en la versión más nueva del SDK (0.109.1) al momento de
-// escribir esto.
-try {
-  const g = globalThis as { EdgeRuntime?: unknown };
-  if (typeof g.EdgeRuntime !== "undefined") {
-    g.EdgeRuntime = undefined;
-  }
-} catch {
-  // Best-effort: si por lo que sea no se puede tocar, seguimos igual.
+// `EdgeRuntime` aunque la función corra en Node.js, y NO se puede tocar (es de
+// solo lectura). El SDK de Anthropic usa ese global tal cual dentro de un
+// header (`X-Stainless-Arch: other:${EdgeRuntime}`), y si trae algun caracter
+// fuera del rango ByteString (0 a 255), el `Headers` nativo lo rechaza al
+// CONSTRUIRLO (TypeError: ByteString) — tumbando CADA llamada casi al
+// instante, antes de tocar la red. Ni pasar `defaultHeaders` al cliente ni
+// parchear el modulo interno del SDK sirven: lo primero llega tarde (el SDK
+// arma y valida ese header antes de leer los headers por defecto) y lo
+// segundo no sobrevive el bundling de Turbopack (cada entrypoint se lleva su
+// propia copia del modulo, asi que parchear "nuestra" copia no afecta la que
+// usa el SDK — confirmado reproduciendo el bug en local con el dev server
+// real antes de este fix). Lo unico verdaderamente compartido, sin importar
+// como empaquete Turbopack el codigo, es el `Headers` nativo del runtime: es
+// un global del lenguaje, no un modulo de node_modules. Lo parcheamos para
+// que descarte silenciosamente los caracteres fuera de rango en vez de
+// crashear — no cambia nada para valores normales (ASCII), solo evita el
+// crash en este caso puntual. El rango se arma con códigos numéricos (0 a
+// 255) en vez de un caracter literal, para no depender de la codificación
+// del archivo fuente.
+const CODIGO_MAXIMO_BYTESTRING = 255;
+if (typeof Headers !== "undefined") {
+  const original = Headers.prototype.append;
+  Headers.prototype.append = function (name: string, value: string) {
+    let limpio = value;
+    for (let i = 0; i < limpio.length; i++) {
+      if (limpio.charCodeAt(i) > CODIGO_MAXIMO_BYTESTRING) {
+        limpio = limpio
+          .split("")
+          .filter((c) => c.charCodeAt(0) <= CODIGO_MAXIMO_BYTESTRING)
+          .join("");
+        break;
+      }
+    }
+    return original.call(this, name, limpio);
+  };
 }
 
 // Un único cliente de Anthropic para todas las rutas (lee ANTHROPIC_API_KEY
