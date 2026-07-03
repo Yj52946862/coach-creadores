@@ -8,7 +8,7 @@
 // La URL de esta función es /api/generar-plan (por la ubicación del archivo).
 // ============================================================================
 
-import { PROMPT_MAESTRO } from "@/lib/prompt-maestro";
+import { promptMaestro } from "@/lib/prompt-maestro";
 import { anthropic, extraerJSON, mensajeDeError } from "@/lib/ia-utils";
 import type { Diagnostico } from "@/lib/tipos";
 
@@ -47,7 +47,7 @@ export async function POST(request: Request) {
       model: "claude-opus-4-8",
       max_tokens: 16000,
       thinking: { type: "adaptive" },
-      system: PROMPT_MAESTRO,
+      system: promptMaestro(diagnostico.idioma || "es"),
       messages: [
         {
           role: "user",

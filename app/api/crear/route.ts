@@ -31,7 +31,7 @@ export async function POST(request: Request) {
     );
   }
 
-  let body: { tipo?: string; tema?: string; contexto?: unknown };
+  let body: { tipo?: string; tema?: string; contexto?: unknown; idioma?: string };
   try {
     body = await request.json();
   } catch {
@@ -70,7 +70,7 @@ export async function POST(request: Request) {
       model: "claude-opus-4-8",
       max_tokens: 6000,
       thinking: { type: "adaptive" },
-      system: promptCrear(tipo),
+      system: promptCrear(tipo, body.idioma ?? "es"),
       messages: [{ role: "user", content: userContent }],
     });
 

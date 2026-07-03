@@ -36,7 +36,7 @@ export default function Inicio() {
   return (
     <main className="contenedor-ancho hub">
       <section className="hub-hero">
-        <span className="hub-eyebrow">Tu estudio de contenido con IA</span>
+        <span className="hub-eyebrow">Estás a punto de ser tendencia.</span>
         <h1>¿Por dónde quieres empezar hoy?</h1>
         <p className="hub-sub">
           Un coach con IA que te ayuda a descubrir qué crear y te da las

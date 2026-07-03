@@ -13,6 +13,7 @@
 import { useState } from "react";
 import type { Plan, RevisionContenido } from "@/lib/tipos";
 import { contextoDePlan } from "@/lib/contexto";
+import { leerIdioma } from "@/lib/idioma";
 import { leerImagenRedimensionada, type Referencia } from "@/lib/imagen";
 import ProgresoCarga from "../ProgresoCarga";
 import GuardarBoton from "./GuardarBoton";
@@ -106,6 +107,7 @@ export default function RevisarContenido({
           contenido: esVisual ? "" : contenido,
           imagenBase64: esVisual ? imagen?.base64 ?? null : null,
           mediaType: esVisual ? imagen?.mediaType ?? null : null,
+          idioma: leerIdioma(),
         }),
       });
       if (!r.ok) {

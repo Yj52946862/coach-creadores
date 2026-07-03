@@ -10,6 +10,7 @@
 import { useState } from "react";
 import type { Plan, IdeaContenido } from "@/lib/tipos";
 import { contextoDePlan } from "@/lib/contexto";
+import { leerIdioma } from "@/lib/idioma";
 import ProgresoCarga from "../ProgresoCarga";
 import GuardarBoton from "./GuardarBoton";
 import { Lightbulb, AlertCircle } from "lucide-react";
@@ -36,7 +37,12 @@ export default function GeneradorIdeas({ plan }: { plan?: Plan | null }) {
       const r = await fetch("/api/crear", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ tipo: "ideas", tema: tema.trim(), contexto }),
+        body: JSON.stringify({
+          tipo: "ideas",
+          tema: tema.trim(),
+          contexto,
+          idioma: leerIdioma(),
+        }),
       });
       if (!r.ok) {
         const d = await r.json().catch(() => null);

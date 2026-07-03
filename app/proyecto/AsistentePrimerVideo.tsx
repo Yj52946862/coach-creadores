@@ -10,7 +10,9 @@
 
 import { useState } from "react";
 import type { Plan, IdeaVideo, PaqueteVideo } from "@/lib/tipos";
+import { leerIdioma } from "@/lib/idioma";
 import ProgresoCarga from "../ProgresoCarga";
+import ListaGuion from "./ListaGuion";
 import {
   Clapperboard,
   Video,
@@ -50,7 +52,7 @@ export default function AsistentePrimerVideo({ plan }: { plan: Plan }) {
       const r = await fetch("/api/asistente", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ accion, contexto, idea }),
+        body: JSON.stringify({ accion, contexto, idea, idioma: leerIdioma() }),
       });
       if (!r.ok) {
         const d = await r.json().catch(() => null);
@@ -147,7 +149,7 @@ export default function AsistentePrimerVideo({ plan }: { plan: Plan }) {
           <h3>
             <FileText size={18} strokeWidth={1.75} /> Tu guion
           </h3>
-          <p className="guion-texto">{paquete.guion}</p>
+          <ListaGuion segmentos={paquete.guion} />
 
           <h3>
             <PenLine size={18} strokeWidth={1.75} /> Títulos para publicar

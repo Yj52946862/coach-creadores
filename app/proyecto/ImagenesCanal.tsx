@@ -13,6 +13,7 @@
 import { useState } from "react";
 import type { Plan, ImagenCanal } from "@/lib/tipos";
 import { contextoDePlan } from "@/lib/contexto";
+import { leerIdioma } from "@/lib/idioma";
 import { leerImagenRedimensionada, type Referencia } from "@/lib/imagen";
 import ProgresoCarga from "../ProgresoCarga";
 import GuardarBoton from "./GuardarBoton";
@@ -75,6 +76,7 @@ export default function ImagenesCanal({
           contexto,
           imagenBase64: referencia?.base64 ?? null,
           mediaType: referencia?.mediaType ?? null,
+          idioma: leerIdioma(),
         }),
       });
       if (!r.ok) {

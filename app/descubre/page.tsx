@@ -9,9 +9,9 @@
 // Ninguna pregunta es obligatoria.
 // ============================================================================
 
-import { createContext, useContext, useId, useState } from "react";
+import { createContext, useContext, useEffect, useId, useState } from "react";
 import { useRouter } from "next/navigation";
-import { AlertCircle, ArrowLeft, ArrowRight } from "lucide-react";
+import { AlertCircle, ArrowLeft, ArrowRight, Globe } from "lucide-react";
 import {
   GENEROS,
   EDADES,
@@ -27,7 +27,9 @@ import {
   EQUIPOS,
   type Diagnostico,
 } from "@/lib/tipos";
+import { leerIdioma, nombreIdioma } from "@/lib/idioma";
 import ProgresoCarga from "../ProgresoCarga";
+import RequiereSesion from "../RequiereSesion";
 
 // Respuestas rápidas para las preguntas de texto libre.
 const SUGERENCIAS_TEMAS = [
@@ -44,6 +46,17 @@ const SUGERENCIAS_TEMAS = [
   "Arte y manualidades",
   "Desarrollo personal",
   "Mascotas",
+  "Marketing digital",
+  "Programación",
+  "Diseño gráfico",
+  "Música",
+  "Fotografía",
+  "Cine y series",
+  "Historia",
+  "Psicología",
+  "Deportes",
+  "Autos y motos",
+  "Comedia y humor",
 ];
 
 const SUGERENCIAS_AYUDA = [
@@ -52,9 +65,21 @@ const SUGERENCIAS_AYUDA = [
   "Consejos prácticos",
   "Organizarse mejor",
   "Aprender algo nuevo",
-  "Ahorrar dinero",
+  "Ahorrar dinero o invertir",
   "Motivación y ánimo",
   "Opiniones honestas",
+  "Elegir qué ver o escuchar",
+  "Resolver problemas técnicos",
+  "Consejos de relaciones",
+  "Rutinas de ejercicio",
+  "Recetas rápidas y fáciles",
+  "Cómo vestir o combinar looks",
+  "Crianza y familia",
+  "Viajar gastando poco",
+  "Estudiar o prepararse para exámenes",
+  "Conseguir trabajo o mejorar el CV",
+  "Emprender o vender algo",
+  "Cuidar su piel o rutina de belleza",
 ];
 
 // Estado inicial: género y edad sin elegir; el resto, la primera opción.
@@ -91,6 +116,16 @@ export default function PaginaDiagnostico() {
   const [paso, setPaso] = useState(0); // paso del onboarding (0 a 5)
   const [cargando, setCargando] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [idiomaActual, setIdiomaActual] = useState("es");
+
+  // Solo para mostrar la nota informativa del Paso 4 — el idioma real ya no
+  // se pregunta aquí, se decide con el selector global del Nav (ver enviar()).
+  useEffect(() => {
+    setIdiomaActual(leerIdioma());
+    const refrescar = () => setIdiomaActual(leerIdioma());
+    window.addEventListener("idioma-cambio", refrescar);
+    return () => window.removeEventListener("idioma-cambio", refrescar);
+  }, []);
 
   function actualizar<K extends keyof Diagnostico>(
     campo: K,
@@ -113,10 +148,13 @@ export default function PaginaDiagnostico() {
     setError(null);
     setCargando(true);
     try {
+      // El idioma ya no se pregunta en el formulario: se toma del selector
+      // global del Nav en el momento de enviar (ver useEffect de arriba).
+      const diagnosticoFinal: Diagnostico = { ...d, idioma: leerIdioma() };
       const respuesta = await fetch("/api/generar-plan", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(d),
+        body: JSON.stringify(diagnosticoFinal),
       });
       if (!respuesta.ok) {
         const detalle = await respuesta.json().catch(() => null);
@@ -136,6 +174,7 @@ export default function PaginaDiagnostico() {
   const esUltimo = paso === TOTAL_PASOS - 1;
 
   return (
+    <RequiereSesion>
     <main className="contenedor">
       <header className="encabezado">
         <h1>Tu coach para empezar a crear</h1>
@@ -301,12 +340,11 @@ export default function PaginaDiagnostico() {
               />
             </Pregunta>
 
-            <Pregunta etiqueta="¿En qué idioma quieres crear?">
-              <CampoTexto
-                valor={d.idioma}
-                onChange={(v) => actualizar("idioma", v)}
-              />
-            </Pregunta>
+            <p className="nota-idioma">
+              <Globe size={15} strokeWidth={1.9} />
+              Vas a crear en <strong>{nombreIdioma(idiomaActual)}</strong> —
+              cámbialo arriba, en la navegación.
+            </p>
 
             <Pregunta etiqueta="¿Para quién es tu contenido?">
               <Selector
@@ -429,6 +467,7 @@ export default function PaginaDiagnostico() {
         )}
       </form>
     </main>
+    </RequiereSesion>
   );
 }
 

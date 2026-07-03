@@ -10,6 +10,7 @@
 import { useState } from "react";
 import type { Plan, DescripcionCreada } from "@/lib/tipos";
 import { contextoDePlan } from "@/lib/contexto";
+import { leerIdioma } from "@/lib/idioma";
 import ProgresoCarga from "../ProgresoCarga";
 import GuardarBoton from "./GuardarBoton";
 import { AlignLeft, AlertCircle } from "lucide-react";
@@ -37,7 +38,12 @@ export default function CreadorDescripcion({ plan }: { plan?: Plan | null }) {
       const r = await fetch("/api/crear", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ tipo: "descripcion", tema: tema.trim(), contexto }),
+        body: JSON.stringify({
+          tipo: "descripcion",
+          tema: tema.trim(),
+          contexto,
+          idioma: leerIdioma(),
+        }),
       });
       if (!r.ok) {
         const d = await r.json().catch(() => null);

@@ -71,6 +71,14 @@ No toques nada de esto hasta que el bucle central esté validado:
 Todo eso son **capas posteriores** (ver sección 9). Construirlas antes de
 validar el cerebro es el error que hunde el proyecto.
 
+> **Actualización consciente (rebrand a YoTrend):** se agregó un "Sistema de
+> login" ligero (nombre + correo, sin contraseña, guardado en `localStorage`
+> vía `lib/sesion.ts`) para entrar a `/descubre`, `/herramientas` y
+> `/proyecto`. **No es autenticación real ni requiere base de datos** — sigue
+> sin haber servidor de sesiones, sin contraseñas, sin verificación de
+> correo. Es una decisión consciente que revierte parcialmente esta
+> restricción, no un olvido del anti-alcance original.
+
 ---
 
 ## 4. Stack técnico

@@ -8,7 +8,7 @@
 // Corre solo en el servidor (aquí vive la API key).
 // ============================================================================
 
-import { PROMPT_IDEAS, PROMPT_DETALLE } from "@/lib/prompt-asistente";
+import { promptIdeas, promptDetalle } from "@/lib/prompt-asistente";
 import { anthropic, extraerJSON, mensajeDeError } from "@/lib/ia-utils";
 
 // Sin esto, Vercel corta la función a los 10s por defecto (Hobby) y esta
@@ -27,7 +27,7 @@ export async function POST(request: Request) {
     );
   }
 
-  let body: { accion?: string; contexto?: unknown; idea?: unknown };
+  let body: { accion?: string; contexto?: unknown; idea?: unknown; idioma?: string };
   try {
     body = await request.json();
   } catch {
@@ -38,7 +38,8 @@ export async function POST(request: Request) {
   }
 
   const esIdeas = body.accion === "ideas";
-  const system = esIdeas ? PROMPT_IDEAS : PROMPT_DETALLE;
+  const idioma = body.idioma ?? "es";
+  const system = esIdeas ? promptIdeas(idioma) : promptDetalle(idioma);
 
   // Armamos el mensaje del usuario con el contexto del plan (y la idea elegida).
   let userContent = "Plan de la persona (JSON):\n\n" + JSON.stringify(body.contexto, null, 2);

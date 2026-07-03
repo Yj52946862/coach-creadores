@@ -3,7 +3,7 @@
    "Feo pero funcional" no significa incómodo: un formulario claro se completa.
    ============================================================================ */
 
-/* Sistema visual premium "Creative Coach OS" (modo claro). */
+/* Sistema visual premium "YoTrend" (modo claro). */
 :root {
   --fondo: #f7f6f2; /* papel cálido */
   --tarjeta: #ffffff;
@@ -58,6 +58,14 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   transition: background 0.2s ease, color 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+/* El contenido de cada página (siempre un <main>) crece para empujar el
+   footer al fondo, incluso en páginas cortas. */
+body > main {
+  flex: 1 0 auto;
 }
 
 .contenedor {
@@ -114,6 +122,7 @@ body {
 }
 select,
 input[type="text"],
+input[type="email"],
 textarea {
   width: 100%;
   font: inherit;
@@ -166,6 +175,41 @@ textarea:focus {
   transform: none;
   box-shadow: none;
 }
+
+/* ── Entrada de sesión (login ligero) ── */
+.entrada-sesion {
+  max-width: 420px;
+  margin: 64px auto;
+  text-align: left;
+}
+.entrada-sesion legend {
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--acento);
+  padding: 0;
+  margin-bottom: 10px;
+}
+.entrada-titulo {
+  font-size: 1.6rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  margin-bottom: 8px;
+}
+.entrada-sub {
+  color: var(--texto-suave);
+  font-size: 0.92rem;
+  margin-bottom: 20px;
+}
+.entrada-sesion .boton {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .aviso-carga {
   color: var(--texto-suave);
   font-size: 0.9rem;
@@ -470,6 +514,35 @@ textarea:focus {
   white-space: pre-wrap;
   color: var(--texto);
   font-size: 0.95rem;
+}
+
+/* Guion como lista ordenada por tiempos (ver ListaGuion.tsx) */
+.lista-guion {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.guion-segmento {
+  display: flex;
+  gap: 12px;
+  align-items: baseline;
+}
+.guion-tiempo {
+  flex-shrink: 0;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--acento);
+  background: var(--acento-suave);
+  padding: 2px 8px;
+  border-radius: 6px;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.guion-segmento-texto {
+  color: var(--texto);
+  font-size: 0.95rem;
+  line-height: 1.5;
 }
 
 /* ── Ficha rápida (resumen visual de un vistazo) ── */
@@ -1001,6 +1074,20 @@ textarea:focus-visible {
   max-width: 52ch;
   margin: 0 0 22px;
 }
+.nota-idioma {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--texto-suave);
+  font-size: 0.9rem;
+  background: var(--chip-bg);
+  border-radius: 9999px;
+  padding: 8px 14px;
+  margin-top: 6px;
+}
+.nota-idioma strong {
+  color: var(--texto);
+}
 .onboarding-nav {
   display: flex;
   align-items: center;
@@ -1155,6 +1242,128 @@ textarea:focus-visible {
 .nav-link-activo {
   color: var(--acento);
   background: var(--acento-suave);
+}
+.nav-derecha {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.nav-extras {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.nav-idioma {
+  width: auto;
+  font-size: 0.82rem;
+  color: var(--texto-suave);
+  background: var(--chip-bg);
+  border: 1px solid transparent;
+  border-radius: 9999px;
+  padding: 6px 10px;
+  cursor: pointer;
+  max-width: 130px;
+}
+.nav-idioma:hover {
+  color: var(--texto);
+}
+.nav-idioma:focus {
+  outline: 2px solid var(--acento);
+  outline-offset: 1px;
+  border-color: transparent;
+}
+.nav-salir {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font: inherit;
+  font-size: 0.85rem;
+  color: var(--texto-suave);
+  background: none;
+  border: none;
+  border-radius: 9999px;
+  padding: 7px 11px;
+  cursor: pointer;
+  transition: color 0.2s var(--ease-out), background 0.2s var(--ease-out);
+}
+.nav-salir:hover {
+  color: var(--error);
+  background: var(--chip-bg);
+}
+
+/* ── Pie de página ── */
+.footer {
+  border-top: 1px solid var(--borde);
+  margin-top: 24px;
+}
+.footer-inner {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 22px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.footer-copy {
+  color: var(--texto-suave);
+  font-size: 0.85rem;
+}
+.footer-links {
+  display: flex;
+  gap: 20px;
+}
+.footer-links a {
+  color: var(--texto-suave);
+  font-size: 0.85rem;
+  text-decoration: none;
+  transition: color 0.2s var(--ease-out);
+}
+.footer-links a:hover {
+  color: var(--acento);
+}
+@media (max-width: 560px) {
+  .footer-inner {
+    justify-content: center;
+    text-align: center;
+  }
+}
+
+/* ── Páginas legales (Privacidad, Términos) ── */
+.legal-pagina h1 {
+  font-size: 2rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  margin-top: 18px;
+}
+.legal-pagina h2 {
+  font-size: 1.15rem;
+  font-weight: 600;
+  margin-top: 32px;
+  margin-bottom: 4px;
+}
+.legal-pagina p,
+.legal-pagina li {
+  color: var(--texto-suave);
+  line-height: 1.65;
+}
+.legal-pagina ul {
+  padding-left: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.legal-fecha {
+  font-size: 0.85rem;
+  color: var(--texto-suave);
+  margin-bottom: 8px;
+}
+.legal-aviso {
+  background: var(--chip-bg);
+  border-radius: var(--radio);
+  padding: 14px 16px;
+  font-size: 0.88rem;
 }
 
 /* ── Hub de inicio ── */
@@ -1345,6 +1554,17 @@ textarea:focus-visible {
   }
   .nav-marca-texto {
     display: none;
+  }
+  .nav-idioma {
+    max-width: 84px;
+    padding: 6px 8px;
+    font-size: 0.76rem;
+  }
+  .nav-salir-texto {
+    display: none;
+  }
+  .nav-salir {
+    padding: 7px;
   }
   .hub-hero h1 {
     font-size: 2.05rem;

@@ -6,7 +6,7 @@
 // ============================================================================
 
 import type Anthropic from "@anthropic-ai/sdk";
-import { PROMPT_REVISION } from "@/lib/prompt-revision";
+import { promptRevision } from "@/lib/prompt-revision";
 import { anthropic, extraerJSON, mensajeDeError } from "@/lib/ia-utils";
 
 // Sin esto, Vercel corta la función a los 10s por defecto (Hobby) y esta
@@ -31,6 +31,7 @@ export async function POST(request: Request) {
     contenido?: string;
     imagenBase64?: string | null;
     mediaType?: string | null;
+    idioma?: string;
   };
   try {
     body = await request.json();
@@ -80,7 +81,7 @@ export async function POST(request: Request) {
       model: "claude-opus-4-8",
       max_tokens: 8000,
       thinking: { type: "adaptive" },
-      system: PROMPT_REVISION,
+      system: promptRevision(body.idioma ?? "es"),
       messages: [{ role: "user", content: contenido }],
     });
 

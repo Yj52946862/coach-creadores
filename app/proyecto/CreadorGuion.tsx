@@ -10,8 +10,10 @@
 import { useState } from "react";
 import type { Plan, GuionCreado } from "@/lib/tipos";
 import { contextoDePlan } from "@/lib/contexto";
+import { leerIdioma } from "@/lib/idioma";
 import ProgresoCarga from "../ProgresoCarga";
 import GuardarBoton from "./GuardarBoton";
+import ListaGuion, { aplanarGuion } from "./ListaGuion";
 import { FileText, Clock, AlertCircle } from "lucide-react";
 
 export default function CreadorGuion({ plan }: { plan?: Plan | null }) {
@@ -36,7 +38,12 @@ export default function CreadorGuion({ plan }: { plan?: Plan | null }) {
       const r = await fetch("/api/crear", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ tipo: "guion", tema: tema.trim(), contexto }),
+        body: JSON.stringify({
+          tipo: "guion",
+          tema: tema.trim(),
+          contexto,
+          idioma: leerIdioma(),
+        }),
       });
       if (!r.ok) {
         const d = await r.json().catch(() => null);
@@ -104,7 +111,7 @@ export default function CreadorGuion({ plan }: { plan?: Plan | null }) {
           <h3>
             <FileText size={18} strokeWidth={1.75} /> Tu guion
           </h3>
-          <p className="guion-texto">{guion.guion}</p>
+          <ListaGuion segmentos={guion.guion} />
 
           {(guion.notas ?? []).length > 0 && (
             <>
@@ -120,7 +127,7 @@ export default function CreadorGuion({ plan }: { plan?: Plan | null }) {
           <GuardarBoton
             tipo="Guion"
             titulo={guion.titulo}
-            contenido={`${guion.titulo} (${guion.duracion})\n\n${guion.guion}`}
+            contenido={`${guion.titulo} (${guion.duracion})\n\n${aplanarGuion(guion.guion)}`}
           />
         </div>
       )}

@@ -34,6 +34,19 @@ export const TIPOS_CONTENIDO = [
   "mostrar mi vida",
   "opinar",
   "inspirar",
+  "reseñar productos o servicios",
+  "documentar un reto o proceso",
+  "hacer comedia o sketches",
+  "debatir o reaccionar",
+  "tutoriales paso a paso",
+  "contar historias",
+  "vlogs de rutina diaria",
+  "hacer unboxing o pruebas",
+  "dar consejos prácticos",
+  "hacer listas o rankings",
+  "responder preguntas (Q&A)",
+  "comparar opciones",
+  "hacer ASMR o contenido relajante",
 ] as const;
 export type TipoContenido = (typeof TIPOS_CONTENIDO)[number];
 
@@ -163,10 +176,19 @@ export interface Metrica {
   detalle: string; // por qué ese número es realista para esta persona
 }
 
+// Un segmento de guion: un momento con su marca de tiempo y lo que se dice o
+// muestra en ese instante. Los guiones se piden SIEMPRE como una lista de
+// estos segmentos (nunca un bloque de texto continuo), para poder mostrarlos
+// como una lista ordenada por tiempos.
+export interface SegmentoGuion {
+  tiempo: string; // ej. "0-3s", "4-10s"
+  texto: string; // lo que se dice o se muestra en ese momento
+}
+
 // Un guion = un ejemplo de diálogo listo para grabar.
 export interface Guion {
   titulo: string; // el tema/título del video
-  guion: string; // el diálogo concreto, con el gancho de los primeros segundos
+  guion: SegmentoGuion[]; // el diálogo concreto, por momentos
 }
 
 // Un indicador = un porcentaje (0-100) para dibujar como anillo.
@@ -230,7 +252,7 @@ export interface IdeaVideo {
 
 // El paquete para grabar la idea elegida.
 export interface PaqueteVideo {
-  guion: string; // el diálogo concreto, marcado por segundos
+  guion: SegmentoGuion[]; // el diálogo concreto, por momentos
   titulos: string[]; // opciones de título listas para publicar
   edicion: string[]; // pasos concretos para editarlo
 }
@@ -266,7 +288,7 @@ export interface IdeaContenido {
 export interface GuionCreado {
   titulo: string;
   duracion: string; // ej. "45-60s"
-  guion: string; // el guion completo, marcado por momentos
+  guion: SegmentoGuion[]; // el guion completo, por momentos
   notas: string[]; // notas de producción / edición
 }
 

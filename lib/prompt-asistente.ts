@@ -8,14 +8,19 @@
 // Mantienen la misma disciplina anti-genérico que el prompt maestro.
 // ============================================================================
 
+import { instruccionIdioma } from "./idioma";
+
 const REGLAS = `Reglas:
 - Sé ESPECÍFICO del tema, nicho, zona y voz de la persona. Nada de clichés
   genéricos ("sé constante", "usa buena luz", "gancho en 3 segundos" como consejo
   suelto): eso aplica a cualquiera y se siente de plantilla.
+- PROFUNDIDAD: cada idea y cada paso debe traer un dato, número o ejemplo real
+  de SU tema — no una observación de superficie que serviría para cualquier nicho.
 - Breve, concreto y listo para usar. Como para leerse en el celular.
 - Responde ÚNICAMENTE con JSON válido, sin texto antes ni después, sin markdown.`;
 
-export const PROMPT_IDEAS = `Eres un coach experto en contenido para principiantes. Te paso el plan de una
+export function promptIdeas(idioma: string): string {
+  return `Eres un coach experto en contenido para principiantes. Te paso el plan de una
 persona (su nicho, plataforma y contexto). Propón 3 ideas CONCRETAS para su
 PRIMER video, fáciles de grabar con lo que ya tiene, que la hagan arrancar hoy.
 
@@ -30,16 +35,27 @@ Usa exactamente este schema (EXACTAMENTE 3 ideas):
       "porque": "por qué funciona para ESTA persona, en 1 frase corta"
     }
   ]
-}`;
+}
 
-export const PROMPT_DETALLE = `Eres un coach experto en contenido. La persona eligió una idea para su PRIMER
+${instruccionIdioma(idioma)}`;
+}
+
+export function promptDetalle(idioma: string): string {
+  return `Eres un coach experto en contenido. La persona eligió una idea para su PRIMER
 video. Dale el paquete completo para grabarlo HOY, aterrizado a su tema y su zona.
 
 ${REGLAS}
 
-Usa exactamente este schema:
+Usa exactamente este schema (el guion es SIEMPRE una lista de 4 a 6 segmentos
+cronológicos, nunca un bloque de texto continuo):
 {
-  "guion": "el diálogo concreto marcado por segundos: [0-3s] ... [4-10s] ... etc. Palabra por palabra, sin relleno, con su voz.",
+  "guion": [
+    { "tiempo": "0-3s", "texto": "el gancho, palabra por palabra, con su voz" },
+    { "tiempo": "4-10s", "texto": "siguiente momento concreto" }
+  ],
   "titulos": [ "4 a 5 opciones de título listas para publicar, cortas y específicas" ],
   "edicion": [ "4 a 6 pasos concretos para editarlo en una app gratis (ej. CapCut): cortes, texto en pantalla, ritmo, música; específicos a ESTE video" ]
-}`;
+}
+
+${instruccionIdioma(idioma)}`;
+}

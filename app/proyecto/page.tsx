@@ -22,6 +22,8 @@ import GeneradorIdeas from "./GeneradorIdeas";
 import CreadorGuion from "./CreadorGuion";
 import CreadorDescripcion from "./CreadorDescripcion";
 import GeneradorRapido from "./GeneradorRapido";
+import ListaGuion from "./ListaGuion";
+import RequiereSesion from "../RequiereSesion";
 import {
   Target,
   Smartphone,
@@ -172,6 +174,7 @@ export default function PaginaResultado() {
 
   if (!plan) {
     return (
+      <RequiereSesion>
       <main className="contenedor">
         <section className="tarjeta proyecto-vacio">
           <span className="camino-icono">
@@ -189,6 +192,7 @@ export default function PaginaResultado() {
 
         <SeccionGuardados items={guardados} onBorrar={borrar} />
       </main>
+      </RequiereSesion>
     );
   }
 
@@ -216,6 +220,7 @@ export default function PaginaResultado() {
   const pct = totalPasos > 0 ? Math.round((pasosHechos / totalPasos) * 100) : 0;
 
   return (
+    <RequiereSesion>
     <main className="contenedor con-reveal">
       <Link href="/" className="enlace-volver">
         ← Volver al inicio
@@ -522,7 +527,7 @@ export default function PaginaResultado() {
           {guiones.map((g, i) => (
             <div className="guion-card" key={i}>
               <p className="guion-titulo">{g.titulo}</p>
-              <p className="guion-texto">{g.guion}</p>
+              <ListaGuion segmentos={g.guion} />
             </div>
           ))}
         </section>
@@ -549,6 +554,7 @@ export default function PaginaResultado() {
       </section>
 
     </main>
+    </RequiereSesion>
   );
 }
 

@@ -8,6 +8,7 @@ import type { Metadata } from "next";
 import { Geist } from "next/font/google";
 import "./globals.css";
 import Nav from "./Nav";
+import Footer from "./Footer";
 
 const geist = Geist({
   subsets: ["latin"],
@@ -15,9 +16,9 @@ const geist = Geist({
 });
 
 export const metadata: Metadata = {
-  title: "Creative Coach OS — tu estudio de contenido con IA",
+  title: "YoTrend — Estás a punto de ser tendencia.",
   description:
-    "Descubre qué contenido crear y usa herramientas de IA: ideas, guiones, descripciones, miniaturas y revisión de contenido, con un plan personalizado paso a paso.",
+    "Descubre qué contenido crear y usa herramientas de IA: ideas, guiones, descripciones, miniaturas y revisión de contenido, con un plan personalizado paso a paso. Estás a punto de ser tendencia.",
 };
 
 export default function RootLayout({
@@ -28,6 +29,7 @@ export default function RootLayout({
       <body>
         <Nav />
         {children}
+        <Footer />
       </body>
     </html>
   );

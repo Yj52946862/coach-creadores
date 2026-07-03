@@ -6,7 +6,12 @@
 // ============================================================================
 
 import HerramientasStudio from "./HerramientasStudio";
+import RequiereSesion from "../RequiereSesion";
 
 export default function PaginaHerramientas() {
-  return <HerramientasStudio />;
+  return (
+    <RequiereSesion>
+      <HerramientasStudio />
+    </RequiereSesion>
+  );
 }
