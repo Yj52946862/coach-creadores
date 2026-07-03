@@ -9,8 +9,23 @@
 
 import type { SegmentoGuion } from "@/lib/tipos";
 
-export default function ListaGuion({ segmentos }: { segmentos: SegmentoGuion[] }) {
-  if (!segmentos || segmentos.length === 0) return null;
+// Nota: `segmentos` viene de datos que a veces llevan tiempo guardados en el
+// navegador (localStorage). Un plan generado ANTES de que el guion pasara a
+// ser una lista todavía puede tener `guion` como string plano — por eso se
+// valida con Array.isArray() en vez de asumir la forma nueva a ciegas. Sin
+// esto, un plan viejo guardado tumbaba TODA la página de Mi Proyecto.
+export default function ListaGuion({
+  segmentos,
+}: {
+  segmentos: SegmentoGuion[] | string | null | undefined;
+}) {
+  if (!segmentos) return null;
+  if (!Array.isArray(segmentos)) {
+    // Formato viejo (string plano) guardado antes de hoy: lo mostramos tal
+    // cual en vez de romper, para no perder el contenido del usuario.
+    return <p className="guion-texto">{segmentos}</p>;
+  }
+  if (segmentos.length === 0) return null;
   return (
     <ol className="lista-guion">
       {segmentos.map((s, i) => (
@@ -25,8 +40,8 @@ export default function ListaGuion({ segmentos }: { segmentos: SegmentoGuion[] }
 
 // Convierte un guion estructurado a texto plano de una línea por segmento,
 // para guardarlo en "Mi Proyecto → Guardado" (que espera un string).
-export function aplanarGuion(segmentos: SegmentoGuion[]): string {
-  return (segmentos ?? [])
-    .map((s) => `[${s.tiempo}] ${s.texto}`)
-    .join("\n");
+export function aplanarGuion(segmentos: SegmentoGuion[] | string | null | undefined): string {
+  if (!segmentos) return "";
+  if (!Array.isArray(segmentos)) return segmentos;
+  return segmentos.map((s) => `[${s.tiempo}] ${s.texto}`).join("\n");
 }
