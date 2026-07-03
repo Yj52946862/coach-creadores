@@ -12,6 +12,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import type { Plan, SegmentoContenido } from "@/lib/tipos";
 import { linkDescarga } from "@/lib/herramientas";
 import { leerGuardados, borrarGuardado, type ItemGuardado } from "@/lib/guardados";
@@ -46,6 +47,7 @@ import {
 } from "lucide-react";
 
 export default function PaginaResultado() {
+  const router = useRouter();
   const [plan, setPlan] = useState<Plan | null>(null);
   const [listo, setListo] = useState(false);
   const [completados, setCompletados] = useState<Set<string>>(new Set());
@@ -201,6 +203,20 @@ export default function PaginaResultado() {
     setGuardados(borrarGuardado(id));
   }
 
+  // Borra el plan, el avance y las respuestas guardadas, y manda de vuelta al
+  // diagnóstico en blanco. Lo guardado con las herramientas (ideas, guiones…)
+  // NO se toca: es independiente del plan.
+  function empezarDeNuevo() {
+    const ok = window.confirm(
+      "¿Seguro que quieres borrar tu proyecto actual y volver a hacer el diagnóstico? Se perderá tu avance guardado.",
+    );
+    if (!ok) return;
+    localStorage.removeItem("plan");
+    localStorage.removeItem("coach-progreso");
+    localStorage.removeItem("coach-diagnostico");
+    router.push("/descubre");
+  }
+
   if (!listo) return null;
 
   if (!plan) {
@@ -257,7 +273,23 @@ export default function PaginaResultado() {
         ← Volver al inicio
       </Link>
 
-      <h1 className="titulo-plan">Mi Proyecto Personal</h1>
+      <div className="cabecera-proyecto">
+        <h1 className="titulo-plan">Mi Proyecto Personal</h1>
+        <div className="acciones-proyecto">
+          <Link href="/descubre" className="enlace-accion">
+            <PenLine size={15} strokeWidth={1.9} />
+            Editar mis respuestas
+          </Link>
+          <button
+            type="button"
+            className="enlace-accion enlace-peligro"
+            onClick={empezarDeNuevo}
+          >
+            <Trash2 size={15} strokeWidth={1.9} />
+            Borrar y empezar de nuevo
+          </button>
+        </div>
+      </div>
 
       {/* CALCULADOR DE AVANCE */}
       {totalPasos > 0 && (

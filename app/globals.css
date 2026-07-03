@@ -263,6 +263,39 @@ textarea:focus {
   letter-spacing: -0.022em;
   line-height: 1.14;
 }
+.cabecera-proyecto {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px 20px;
+}
+.acciones-proyecto {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+  margin-bottom: 4px;
+}
+.enlace-accion {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--texto-suave);
+  background: none;
+  border: none;
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-decoration: none;
+  cursor: pointer;
+  padding: 4px 2px;
+}
+.enlace-accion:hover {
+  color: var(--acento);
+}
+.enlace-peligro:hover {
+  color: #d33;
+}
 .resumen {
   font-size: 1.1rem;
   margin: 12px 0 24px;

@@ -11,7 +11,7 @@
 
 import { createContext, useContext, useEffect, useId, useState } from "react";
 import { useRouter } from "next/navigation";
-import { AlertCircle, ArrowLeft, ArrowRight, Globe } from "lucide-react";
+import { AlertCircle, ArrowLeft, ArrowRight, Globe, Pencil } from "lucide-react";
 import {
   GENEROS,
   EDADES,
@@ -117,6 +117,7 @@ export default function PaginaDiagnostico() {
   const [cargando, setCargando] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [idiomaActual, setIdiomaActual] = useState("es");
+  const [editando, setEditando] = useState(false);
 
   // Solo para mostrar la nota informativa del Paso 4 — el idioma real ya no
   // se pregunta aquí, se decide con el selector global del Nav (ver enviar()).
@@ -125,6 +126,20 @@ export default function PaginaDiagnostico() {
     const refrescar = () => setIdiomaActual(leerIdioma());
     window.addEventListener("idioma-cambio", refrescar);
     return () => window.removeEventListener("idioma-cambio", refrescar);
+  }, []);
+
+  // Si ya contestaste antes, precargamos tus respuestas para que puedas
+  // editarlas en vez de empezar en blanco (se guardan al enviar, ver enviar()).
+  useEffect(() => {
+    const guardado = localStorage.getItem("coach-diagnostico");
+    if (!guardado) return;
+    try {
+      const previo = JSON.parse(guardado) as Diagnostico;
+      setD({ ...INICIAL, ...previo });
+      setEditando(true);
+    } catch {
+      // Datos corruptos: seguimos con el formulario en blanco, sin avisar.
+    }
   }, []);
 
   function actualizar<K extends keyof Diagnostico>(
@@ -162,8 +177,11 @@ export default function PaginaDiagnostico() {
       }
       const plan = await respuesta.json();
       // Guardamos el plan en localStorage para pasarlo a "Mi Proyecto" y poder
-      // volver a él —con tu avance— sin base de datos ni cuentas.
+      // volver a él —con tu avance— sin base de datos ni cuentas. También
+      // guardamos el diagnóstico (tus respuestas) para poder precargarlo si
+      // vuelves a "Editar mis respuestas" desde Mi Proyecto.
       localStorage.setItem("plan", JSON.stringify(plan));
+      localStorage.setItem("coach-diagnostico", JSON.stringify(diagnosticoFinal));
       router.push("/proyecto");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Algo salió mal.");
@@ -182,6 +200,13 @@ export default function PaginaDiagnostico() {
           Te haré unas preguntas para armar tu plan. Responde lo que quieras —no
           tienes que llenar todo— y avanza a tu ritmo.
         </p>
+        {editando && (
+          <p className="nota-idioma">
+            <Pencil size={15} strokeWidth={1.9} />
+            Precargamos tus respuestas anteriores — cambia lo que quieras y
+            genera un plan nuevo al final.
+          </p>
+        )}
       </header>
 
       {/* Progreso del onboarding */}
