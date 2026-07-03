@@ -118,6 +118,7 @@ export default function PaginaDiagnostico() {
   const [error, setError] = useState<string | null>(null);
   const [idiomaActual, setIdiomaActual] = useState("es");
   const [editando, setEditando] = useState(false);
+  const [planViejoSinDiagnostico, setPlanViejoSinDiagnostico] = useState(false);
 
   // Solo para mostrar la nota informativa del Paso 4 — el idioma real ya no
   // se pregunta aquí, se decide con el selector global del Nav (ver enviar()).
@@ -132,13 +133,21 @@ export default function PaginaDiagnostico() {
   // editarlas en vez de empezar en blanco (se guardan al enviar, ver enviar()).
   useEffect(() => {
     const guardado = localStorage.getItem("coach-diagnostico");
-    if (!guardado) return;
-    try {
-      const previo = JSON.parse(guardado) as Diagnostico;
-      setD({ ...INICIAL, ...previo });
-      setEditando(true);
-    } catch {
-      // Datos corruptos: seguimos con el formulario en blanco, sin avisar.
+    if (guardado) {
+      try {
+        const previo = JSON.parse(guardado) as Diagnostico;
+        setD({ ...INICIAL, ...previo });
+        setEditando(true);
+        return;
+      } catch {
+        // Datos corruptos: seguimos con el formulario en blanco, sin avisar.
+      }
+    }
+    // No hay respuestas guardadas. Si YA existe un plan, es porque se generó
+    // antes de que empezáramos a guardar el diagnóstico (función nueva) — se
+    // lo avisamos para que no piense que el formulario se vació solo.
+    if (localStorage.getItem("plan")) {
+      setPlanViejoSinDiagnostico(true);
     }
   }, []);
 
@@ -205,6 +214,15 @@ export default function PaginaDiagnostico() {
             <Pencil size={15} strokeWidth={1.9} />
             Precargamos tus respuestas anteriores — cambia lo que quieras y
             genera un plan nuevo al final.
+          </p>
+        )}
+        {planViejoSinDiagnostico && (
+          <p className="nota-idioma">
+            <AlertCircle size={15} strokeWidth={1.9} />
+            Tu proyecto actual se generó antes de que empezáramos a guardar
+            tus respuestas, así que no podemos precargarlas aquí — contesta de
+            nuevo para actualizar tu plan. De ahora en adelante sí vamos a
+            poder recordarlas.
           </p>
         )}
       </header>
