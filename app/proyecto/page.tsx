@@ -110,47 +110,78 @@ export default function PaginaResultado() {
   // lógica: solo el MOMENTO en que se muestra cada tarjeta.
   useEffect(() => {
     if (!plan) return;
+
+    // La consulta del DOM se reintenta unas pocas veces porque este efecto
+    // puede ejecutarse ANTES de que el navegador pinte las tarjetas de este
+    // mismo render (React a veces corre los efectos de un commit antes de que
+    // ese commit esté reflejado en el DOM que consulta querySelectorAll). Sin
+    // este reintento, la consulta encontraba 0 elementos, el efecto salía
+    // temprano sin registrar el observer NI la red de seguridad de 1.5s, y
+    // como el arreglo de dependencias no volvía a cambiar de valor
+    // (guardados.length se queda en 0 si no hay nada guardado), el efecto
+    // jamás se reintentaba solo: la página quedaba con opacity:0 para
+    // siempre. Se usa setTimeout (no requestAnimationFrame) porque rAF se
+    // pausa en pestañas en segundo plano y no queremos depender de que la
+    // pestaña esté visible en el momento exacto del montaje.
+    let observador: IntersectionObserver | null = null;
+    let fallback: number | null = null;
+    let intentoId: number | null = null;
+    let cancelado = false;
+
     const selector =
       ".con-reveal .resumen, .con-reveal .ficha, .con-reveal .avance, .con-reveal .tarjeta, .con-reveal .zona-titulo, .con-reveal .titulo-fases";
-    const items = Array.from(document.querySelectorAll<HTMLElement>(selector));
-    if (items.length === 0) return;
 
-    const revelarTodo = () =>
-      items.forEach((el) => el.classList.add("revelado"));
-
-    // Si el navegador no soporta IntersectionObserver, mostramos todo de una.
-    if (typeof IntersectionObserver === "undefined") {
-      revelarTodo();
-      return;
-    }
-
-    const observador = new IntersectionObserver(
-      (entradas) => {
-        let i = 0;
-        for (const entrada of entradas) {
-          if (!entrada.isIntersecting) continue;
-          const el = entrada.target as HTMLElement;
-          const retraso = Math.min(i, 6) * 55; // escalonado, tope ~330ms
-          el.style.transitionDelay = `${retraso}ms`;
-          el.classList.add("revelado");
-          observador.unobserve(el);
-          // Limpiamos el retraso tras la entrada, para que el hover no se sienta lento.
-          window.setTimeout(() => {
-            el.style.transitionDelay = "";
-          }, retraso + 700);
-          i++;
+    const intentar = (intentosRestantes: number) => {
+      if (cancelado) return;
+      const items = Array.from(document.querySelectorAll<HTMLElement>(selector));
+      if (items.length === 0) {
+        if (intentosRestantes > 0) {
+          intentoId = window.setTimeout(() => intentar(intentosRestantes - 1), 100);
         }
-      },
-      { threshold: 0.1, rootMargin: "0px 0px -40px 0px" },
-    );
+        return;
+      }
 
-    items.forEach((el) => observador.observe(el));
-    // Red de seguridad: si algo impidiera revelar, mostramos todo al 1.5s.
-    const fallback = window.setTimeout(revelarTodo, 1500);
+      const revelarTodo = () =>
+        items.forEach((el) => el.classList.add("revelado"));
+
+      // Si el navegador no soporta IntersectionObserver, mostramos todo de una.
+      if (typeof IntersectionObserver === "undefined") {
+        revelarTodo();
+        return;
+      }
+
+      observador = new IntersectionObserver(
+        (entradas) => {
+          let i = 0;
+          for (const entrada of entradas) {
+            if (!entrada.isIntersecting) continue;
+            const el = entrada.target as HTMLElement;
+            const retraso = Math.min(i, 6) * 55; // escalonado, tope ~330ms
+            el.style.transitionDelay = `${retraso}ms`;
+            el.classList.add("revelado");
+            observador?.unobserve(el);
+            // Limpiamos el retraso tras la entrada, para que el hover no se sienta lento.
+            window.setTimeout(() => {
+              el.style.transitionDelay = "";
+            }, retraso + 700);
+            i++;
+          }
+        },
+        { threshold: 0.1, rootMargin: "0px 0px -40px 0px" },
+      );
+
+      items.forEach((el) => observador?.observe(el));
+      // Red de seguridad: si algo impidiera revelar, mostramos todo al 1.5s.
+      fallback = window.setTimeout(revelarTodo, 1500);
+    };
+
+    intentar(10); // hasta ~1s de reintentos antes de rendirse
 
     return () => {
-      observador.disconnect();
-      window.clearTimeout(fallback);
+      cancelado = true;
+      if (intentoId !== null) window.clearTimeout(intentoId);
+      observador?.disconnect();
+      if (fallback !== null) window.clearTimeout(fallback);
     };
     // Depende también de guardados.length: si aparecen ítems guardados DESPUÉS
     // (al montar o al guardar algo), re-observamos para que también se revelen
