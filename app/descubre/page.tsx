@@ -151,6 +151,25 @@ export default function PaginaDiagnostico() {
     }
   }, []);
 
+  // Sugerimos la zona automáticamente (por IP, sin pedir permiso de
+  // ubicación) para no hacerla escribir algo tan obvio. Sigue siendo 100%
+  // editable: si el campo ya tiene algo (porque la persona ya escribió o
+  // porque se precargó de una respuesta anterior) no lo pisamos. Si el
+  // servicio falla o tarda, el campo simplemente se queda en blanco, igual
+  // que antes de este cambio.
+  useEffect(() => {
+    fetch("https://ipapi.co/json/")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((info: { city?: string; country_name?: string } | null) => {
+        if (!info?.city || !info?.country_name) return;
+        const zona = `${info.city}, ${info.country_name}`;
+        setD((previo) => (previo.ubicacion ? previo : { ...previo, ubicacion: zona }));
+      })
+      .catch(() => {
+        // Sin internet, servicio caído o bloqueado: se queda en blanco.
+      });
+  }, []);
+
   function actualizar<K extends keyof Diagnostico>(
     campo: K,
     valor: Diagnostico[K],
@@ -381,6 +400,9 @@ export default function PaginaDiagnostico() {
                 onChange={(v) => actualizar("ubicacion", v)}
                 placeholder="Ej. Guadalajara, México"
               />
+              <span className="campo-ayuda">
+                Detectamos tu zona aproximada — cámbiala si no es correcta.
+              </span>
             </Pregunta>
 
             <p className="nota-idioma">

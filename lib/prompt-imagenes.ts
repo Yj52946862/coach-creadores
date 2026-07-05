@@ -31,7 +31,10 @@ NO generas la imagen (no puedes dibujar). En su lugar entregas:
 
 Reglas: específico de su nicho y zona, anti-genérico, breve. El "concepto" debe
 explicar POR QUÉ esa dirección visual funciona para SU nicho (no solo
-describirla). Si hay imagen de referencia, retoma sus colores y estilo.
+describirla). Si hay imagen de referencia, retoma sus colores y estilo. En
+"concepto" y "consejos", si usas un término que un principiante podría no
+conocer (ej. contraste, jerarquía visual, paleta...), acompáñalo de una
+explicación breve entre paréntesis en español simple.
 Responde ÚNICAMENTE con JSON válido, sin
 markdown.
 

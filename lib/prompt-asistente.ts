@@ -16,6 +16,10 @@ const REGLAS = `Reglas:
   suelto): eso aplica a cualquiera y se siente de plantilla.
 - PROFUNDIDAD: cada idea y cada paso debe traer un dato, número o ejemplo real
   de SU tema — no una observación de superficie que serviría para cualquier nicho.
+- NUNCA jerga sin explicar: es un principiante absoluto. Si usas un término de
+  redes/plataformas que podría no conocer (ej. GRWM, POV, hook, reel, jump cut,
+  B-roll...), acompáñalo de una explicación breve entre paréntesis en español
+  simple, justo donde aparece (ej. "un GRWM (video mostrando cómo te arreglas)").
 - Breve, concreto y listo para usar. Como para leerse en el celular.
 - Responde ÚNICAMENTE con JSON válido, sin texto antes ni después, sin markdown.`;
 

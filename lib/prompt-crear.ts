@@ -19,6 +19,7 @@ REGLAS:
 - Si recibes un contexto con nicho/plataforma, AJUSTA el formato, la duración y el tono a esa plataforma y a esa persona.
 - Si solo hay un tema, trabaja con ese tema con tu mejor criterio actualizado de lo que funciona HOY.
 - PROFUNDIDAD: usa números, ejemplos o nombres concretos (no "algunos productos" sino cuáles; no "muchas personas" sino a quiénes). Cada línea debe sonar investigada, nunca plantillera.
+- NUNCA jerga sin explicar: quien lee esto puede ser un principiante absoluto. Si usas un término de redes/plataformas que podría no conocer (ej. GRWM, POV, hook, reel, jump cut, B-roll...), acompáñalo de una explicación breve entre paréntesis en español simple, justo donde aparece.
 - Tono cercano y directo.
 
 FORMATO DE SALIDA: responde ÚNICAMENTE con un objeto JSON válido, sin texto antes ni después, sin \`\`\`json ni markdown.`;

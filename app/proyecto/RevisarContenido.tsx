@@ -142,10 +142,7 @@ export default function RevisarContenido({
       <h2>
         <Search size={20} strokeWidth={1.75} /> Revisa tu contenido con IA
       </h2>
-      <p>
-        Elige qué quieres revisar. Te digo qué tan listo está, qué funciona, qué
-        mejorar y una versión mejorada.
-      </p>
+      <p>Pulo tu contenido y lo mejoro con IA.</p>
 
       {/* Qué tipo de contenido */}
       <div
