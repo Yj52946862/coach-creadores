@@ -11,7 +11,15 @@
 
 import { createContext, useContext, useEffect, useId, useState } from "react";
 import { useRouter } from "next/navigation";
-import { AlertCircle, ArrowLeft, ArrowRight, Check, Globe, Pencil } from "lucide-react";
+import {
+  AlertCircle,
+  ArrowLeft,
+  ArrowRight,
+  Check,
+  Footprints,
+  Globe,
+  Pencil,
+} from "lucide-react";
 import {
   GENEROS,
   EDADES,
@@ -632,6 +640,15 @@ export default function PaginaDiagnostico() {
                 <strong>{parte1.plataforma_principal.red}</strong>,{" "}
                 {parte1.plataforma_principal.formato}
               </p>
+              {/* Lo más importante: qué hacer HOY. Se muestra igual de
+                  destacado que en Mi Proyecto (misma clase), para que no
+                  tenga que esperar el resto del plan para arrancar. */}
+              <section className="tarjeta siguiente-paso">
+                <span className="siguiente-paso-tag">
+                  <Footprints size={16} strokeWidth={2} /> Tu siguiente paso
+                </span>
+                <p className="siguiente-paso-texto">{parte1.primer_paso_hoy}</p>
+              </section>
               <button className="boton" onClick={() => pedirParte(2)}>
                 Ver mi ruta paso a paso <ArrowRight size={18} strokeWidth={2} />
               </button>

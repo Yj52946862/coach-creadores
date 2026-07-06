@@ -245,23 +245,28 @@ export interface Plan {
 // El plan se genera en 3 llamadas más chicas en vez de una sola grande, para
 // que cada una tarde menos y no arriesgue el límite de tiempo de Vercel. Cada
 // "Parte" es un pedazo de Plan (Pick, no una copia) — así, si Plan cambia,
-// estas quedan sincronizadas solas. "fases" queda SOLA en la Parte 2 porque es
-// lo más pesado de generar (varios pasos por fase); aislarla evita que compita
-// por tiempo con el resto del contenido en la misma llamada.
+// estas quedan sincronizadas solas. El reparto sigue un orden de PRIORIDAD,
+// no solo de peso: la Parte 1 trae SOLO lo más importante para la persona
+// (quién es, su nicho, su plataforma y qué hacer HOY) — nada de eso espera a
+// las otras dos llamadas. "fases" (la ruta) queda SOLA en la Parte 2 por ser
+// lo más pesado de generar. Todo lo demás (análisis, métricas, ejemplos,
+// consejos, herramientas) es contenido de apoyo, no crítico para arrancar, y
+// se deja para la Parte 3.
 export type PlanParte1 = Pick<
   Plan,
-  | "diagnostico_resumen"
-  | "nicho"
-  | "plataforma_principal"
-  | "primer_paso_hoy"
-  | "que_funciona_ahora"
-  | "metricas"
-  | "analisis"
+  "diagnostico_resumen" | "nicho" | "plataforma_principal" | "primer_paso_hoy"
 >;
 export type PlanParte2 = Pick<Plan, "fases">;
 export type PlanParte3 = Pick<
   Plan,
-  "ejemplos_titulos" | "ejemplos_guiones" | "consejos" | "herramientas" | "expectativa_realista"
+  | "que_funciona_ahora"
+  | "metricas"
+  | "analisis"
+  | "ejemplos_titulos"
+  | "ejemplos_guiones"
+  | "consejos"
+  | "herramientas"
+  | "expectativa_realista"
 >;
 
 // ── Asistente "tu primer video" ─────────────────────────────────────────────

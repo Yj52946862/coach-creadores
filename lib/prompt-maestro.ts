@@ -10,12 +10,16 @@
 //
 // EL PLAN SE GENERA EN 3 LLAMADAS ("partes"), no en una sola. Antes era una
 // única llamada gigante que a veces superaba el límite de 60s de Vercel
-// (confirmado con 504 reales en producción). Dividirlo en partes más chicas
-// baja el riesgo: cada llamada genera menos, así que tarda menos. La Parte 2
-// (las fases con sus pasos) va SOLA porque es lo más pesado de generar.
-// `app/descubre/page.tsx` pide las 3 partes en secuencia (el usuario le da
-// "ver más" entre cada una) y `app/api/generar-plan/route.ts` le manda a cada
-// parte el resultado de las anteriores, para que la 2 y la 3 sigan siendo
+// (confirmado con 504 reales en producción). Dividirla también baja el riesgo
+// (cada llamada genera menos, tarda menos), pero el reparto NO es solo por
+// peso: es por PRIORIDAD. La Parte 1 trae SOLO lo más importante para la
+// persona —quién es, su nicho, su plataforma y qué hacer HOY— sin esperar a
+// nada más pesado. La Parte 2 (las fases con sus pasos) va SOLA porque es lo
+// más pesado de generar. La Parte 3 es todo el contenido de APOYO (métricas,
+// análisis, ejemplos, consejos, herramientas) — valioso, pero no crítico para
+// arrancar. `app/descubre/page.tsx` pide las 3 partes en secuencia (el usuario
+// le da "ver más" entre cada una) y `app/api/generar-plan/route.ts` le manda a
+// cada parte el resultado de las anteriores, para que la 2 y la 3 sigan siendo
 // consistentes con lo que ya se decidió en la 1 (mismo nicho, misma
 // plataforma, etc.).
 //
@@ -140,21 +144,15 @@ y YouTube). Es una pista, no un estereotipo: nunca encasilles a la persona.
 SI FALTAN DATOS: si alguna respuesta viene vacía, trabaja con lo que haya y haz
 supuestos razonables; nunca te bloquees ni le pidas más información a la persona.`;
 
-// ── Parte 1: el diagnóstico y la dirección ──────────────────────────────────
-const SCHEMA_PARTE_1 = `INCLUYE MÉTRICAS CONCRETAS: dale números realistas y medibles (cadencia de
-publicación, tiempo por pieza, metas a 30 y 90 días, y qué indicadores mirar).
-Ajústalos a sus horas, su presupuesto y su equipo.
-
-ANÁLISIS VISUAL (estimaciones honestas): en "analisis" da porcentajes (0-100) que
-resuman la oportunidad —interés del público, qué tan libre está el espacio, encaje
-con la persona, potencial de ingresos y ventaja de su zona— más una "mezcla de
-contenido" cuyos porcentajes SUMEN 100. Son estimaciones tuyas con criterio, NO
-datos en tiempo real: sé realista (no infles todo al 90%) y que cada nota sea
-específica de su nicho y zona.
-
-FORMATO DE SALIDA: responde ÚNICAMENTE con un objeto JSON válido, sin texto antes
-ni después, sin \`\`\`json ni markdown. Esta es la PARTE 1 de 3 (diagnóstico y
-dirección) — no incluyas fases, ejemplos, consejos ni herramientas, esos van en
+// ── Parte 1: SOLO lo más importante ──────────────────────────────────────────
+// A propósito, esta parte trae ÚNICAMENTE lo que de verdad quita la parálisis:
+// quién es, su nicho, su plataforma y qué hacer HOY. Nada de análisis, métricas,
+// ejemplos ni herramientas — eso es contenido de apoyo y espera a la Parte 3.
+// Así la persona recibe lo más valioso primero, sin esperar el resto.
+const SCHEMA_PARTE_1 = `FORMATO DE SALIDA: responde ÚNICAMENTE con un objeto JSON válido, sin texto antes
+ni después, sin \`\`\`json ni markdown. Esta es la PARTE 1 de 3 — la MÁS
+IMPORTANTE: quién es, su nicho, su plataforma y su primer paso. NO incluyas
+fases, métricas, análisis, ejemplos, consejos ni herramientas — todo eso va en
 las partes 2 y 3. Usa exactamente este schema (textos CORTOS y ESPECÍFICOS):
 
 {
@@ -168,31 +166,6 @@ las partes 2 y 3. Usa exactamente este schema (textos CORTOS y ESPECÍFICOS):
     "red": "YouTube | Instagram | TikTok | Facebook",
     "formato": "corto y concreto (ej. 'Reels verticales 30-60s, solo manos')",
     "porque": "por qué esta plataforma y formato para ELLA, en 1 frase corta"
-  },
-  "que_funciona_ahora": [
-    "3 a 5 insights ESPECÍFICOS de su sub-nicho hoy (no la receta genérica de la categoría), frase corta"
-  ],
-  "metricas": [
-    { "etiqueta": "Cadencia", "valor": "ej. 3 Reels por semana", "detalle": "media frase, máx ~14 palabras" },
-    { "etiqueta": "Tiempo por pieza", "valor": "ej. 40-60 min", "detalle": "media frase" },
-    { "etiqueta": "Meta a 30 días", "valor": "ej. 9-12 publicaciones", "detalle": "media frase" },
-    { "etiqueta": "Meta a 90 días", "valor": "ej. 300-800 seguidores", "detalle": "media frase, meta honesta" },
-    { "etiqueta": "Qué medir", "valor": "ej. retención y guardados", "detalle": "media frase" }
-  ],
-  "analisis": {
-    "indicadores": [
-      { "nombre": "Interés del público", "porcentaje": 0, "nota": "media frase específica de su nicho" },
-      { "nombre": "Espacio libre", "porcentaje": 0, "nota": "qué tan poca competencia hay en su cuña" },
-      { "nombre": "Encaje contigo", "porcentaje": 0, "nota": "cuánto juega con lo que ya trae" },
-      { "nombre": "Potencial de ingresos", "porcentaje": 0, "nota": "según su objetivo y nicho" },
-      { "nombre": "Ventaja por tu zona", "porcentaje": 0, "nota": "cuánto ayuda su ubicación e idioma" }
-    ],
-    "mezcla_contenido": [
-      { "etiqueta": "ej. Reseñas", "porcentaje": 40 },
-      { "etiqueta": "ej. Educativo", "porcentaje": 35 },
-      { "etiqueta": "ej. Personal", "porcentaje": 25 }
-    ],
-    "publico_potencial": "1 frase: a quién y qué tan amplio es el público en su zona (estimación)"
   },
   "primer_paso_hoy": "1 frase: una sola acción concreta de su tema para hoy"
 }
@@ -246,14 +219,51 @@ la app de la red elegida, un editor (p. ej. CapCut) y, si aplica, algo para port
 (p. ej. Canva). Solo el nombre y para qué sirve. NO escribas URLs ni links: la app
 pone los enlaces oficiales por su cuenta.
 
+INCLUYE MÉTRICAS CONCRETAS: dale números realistas y medibles (cadencia de
+publicación, tiempo por pieza, metas a 30 y 90 días, y qué indicadores mirar).
+Ajústalos a sus horas, su presupuesto y su equipo.
+
+ANÁLISIS VISUAL (estimaciones honestas): en "analisis" da porcentajes (0-100) que
+resuman la oportunidad —interés del público, qué tan libre está el espacio, encaje
+con la persona, potencial de ingresos y ventaja de su zona— más una "mezcla de
+contenido" cuyos porcentajes SUMEN 100. Son estimaciones tuyas con criterio, NO
+datos en tiempo real: sé realista (no infles todo al 90%) y que cada nota sea
+específica de su nicho y zona.
+
 Mantente 100% consistente con el nicho, la plataforma y las fases que ya se
 decidieron antes (te los paso en el mensaje) — no los cambies ni los contradigas.
 
 FORMATO DE SALIDA: responde ÚNICAMENTE con un objeto JSON válido, sin texto antes
-ni después, sin \`\`\`json ni markdown. Esta es la PARTE 3 de 3 (ejemplos y
-cierre) — usa exactamente este schema:
+ni después, sin \`\`\`json ni markdown. Esta es la PARTE 3 de 3 (análisis,
+ejemplos y cierre — todo contenido de APOYO, no crítico para arrancar) — usa
+exactamente este schema:
 
 {
+  "que_funciona_ahora": [
+    "3 a 5 insights ESPECÍFICOS de su sub-nicho hoy (no la receta genérica de la categoría), frase corta"
+  ],
+  "metricas": [
+    { "etiqueta": "Cadencia", "valor": "ej. 3 Reels por semana", "detalle": "media frase, máx ~14 palabras" },
+    { "etiqueta": "Tiempo por pieza", "valor": "ej. 40-60 min", "detalle": "media frase" },
+    { "etiqueta": "Meta a 30 días", "valor": "ej. 9-12 publicaciones", "detalle": "media frase" },
+    { "etiqueta": "Meta a 90 días", "valor": "ej. 300-800 seguidores", "detalle": "media frase, meta honesta" },
+    { "etiqueta": "Qué medir", "valor": "ej. retención y guardados", "detalle": "media frase" }
+  ],
+  "analisis": {
+    "indicadores": [
+      { "nombre": "Interés del público", "porcentaje": 0, "nota": "media frase específica de su nicho" },
+      { "nombre": "Espacio libre", "porcentaje": 0, "nota": "qué tan poca competencia hay en su cuña" },
+      { "nombre": "Encaje contigo", "porcentaje": 0, "nota": "cuánto juega con lo que ya trae" },
+      { "nombre": "Potencial de ingresos", "porcentaje": 0, "nota": "según su objetivo y nicho" },
+      { "nombre": "Ventaja por tu zona", "porcentaje": 0, "nota": "cuánto ayuda su ubicación e idioma" }
+    ],
+    "mezcla_contenido": [
+      { "etiqueta": "ej. Reseñas", "porcentaje": 40 },
+      { "etiqueta": "ej. Educativo", "porcentaje": 35 },
+      { "etiqueta": "ej. Personal", "porcentaje": 25 }
+    ],
+    "publico_potencial": "1 frase: a quién y qué tan amplio es el público en su zona (estimación)"
+  },
   "ejemplos_titulos": [
     "5 a 8 títulos cortos con su tema, su zona o números reales; que suenen a ella, no plantillas"
   ],
