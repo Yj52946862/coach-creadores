@@ -11,7 +11,7 @@
 
 import { createContext, useContext, useEffect, useId, useState } from "react";
 import { useRouter } from "next/navigation";
-import { AlertCircle, ArrowLeft, ArrowRight, Globe, Pencil } from "lucide-react";
+import { AlertCircle, ArrowLeft, ArrowRight, Check, Globe, Pencil } from "lucide-react";
 import {
   GENEROS,
   EDADES,
@@ -26,6 +26,9 @@ import {
   PRESUPUESTOS,
   EQUIPOS,
   type Diagnostico,
+  type PlanParte1,
+  type PlanParte2,
+  type PlanParte3,
 } from "@/lib/tipos";
 import { leerIdioma, nombreIdioma } from "@/lib/idioma";
 import ProgresoCarga from "../ProgresoCarga";
@@ -120,6 +123,18 @@ export default function PaginaDiagnostico() {
   const [editando, setEditando] = useState(false);
   const [planViejoSinDiagnostico, setPlanViejoSinDiagnostico] = useState(false);
 
+  // El plan se arma en 3 partes más chicas (en vez de una sola llamada
+  // grande) para que cada una tarde menos y no arriesgue el límite de tiempo
+  // de Vercel. "etapa" cuenta cuántas partes ya están listas (0, 1, 2 o 3);
+  // entre cada una, la persona le da a "Ver más de mi plan" para pedir la
+  // siguiente. Al completar la 3 armamos el Plan completo y navegamos a
+  // /proyecto exactamente como antes.
+  const [etapa, setEtapa] = useState<0 | 1 | 2 | 3>(0);
+  const [parte1, setParte1] = useState<PlanParte1 | null>(null);
+  const [parte2, setParte2] = useState<PlanParte2 | null>(null);
+  const [parte3, setParte3] = useState<PlanParte3 | null>(null);
+  const [diagnosticoEnviado, setDiagnosticoEnviado] = useState<Diagnostico | null>(null);
+
   // Solo para mostrar la nota informativa del Paso 4 — el idioma real ya no
   // se pregunta aquí, se decide con el selector global del Nav (ver enviar()).
   useEffect(() => {
@@ -186,31 +201,56 @@ export default function PaginaDiagnostico() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
-  async function enviar(evento: React.FormEvent) {
+  function enviar(evento: React.FormEvent) {
     evento.preventDefault();
+    // El idioma ya no se pregunta en el formulario: se toma del selector
+    // global del Nav en el momento de enviar (ver useEffect de arriba).
+    const diagnosticoFinal: Diagnostico = { ...d, idioma: leerIdioma() };
+    setDiagnosticoEnviado(diagnosticoFinal);
+    pedirParte(1, diagnosticoFinal);
+  }
+
+  // Pide UNA parte del plan (1, 2 o 3). Se llama sola al enviar el
+  // diagnóstico (parte 1) y de nuevo cada vez que la persona le da a "Ver más
+  // de mi plan" (parte 2, luego 3). `diagnosticoOverride` solo hace falta en
+  // la primera llamada: `setDiagnosticoEnviado` de arriba todavía no se
+  // reflejó en el estado cuando esta función arranca, así que se lo pasamos
+  // directo para no leer un valor viejo.
+  async function pedirParte(numero: 1 | 2 | 3, diagnosticoOverride?: Diagnostico) {
+    const diagnosticoActual = diagnosticoOverride ?? diagnosticoEnviado;
+    if (!diagnosticoActual) return; // no debería pasar: no hay parte sin haber enviado antes
     setError(null);
     setCargando(true);
     try {
-      // El idioma ya no se pregunta en el formulario: se toma del selector
-      // global del Nav en el momento de enviar (ver useEffect de arriba).
-      const diagnosticoFinal: Diagnostico = { ...d, idioma: leerIdioma() };
+      // A partir de la parte 2 le mandamos lo ya decidido antes, para que
+      // Claude no contradiga el nicho, la plataforma o las fases ya generadas.
+      const previo =
+        numero === 2 ? parte1 : numero === 3 ? { ...parte1, ...parte2 } : undefined;
       const respuesta = await fetch("/api/generar-plan", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(diagnosticoFinal),
+        body: JSON.stringify({ diagnostico: diagnosticoActual, parte: numero, previo }),
       });
       if (!respuesta.ok) {
         const detalle = await respuesta.json().catch(() => null);
-        throw new Error(detalle?.error ?? "No se pudo generar el plan.");
+        throw new Error(detalle?.error ?? "No se pudo generar esa parte del plan.");
       }
-      const plan = await respuesta.json();
-      // Guardamos el plan en localStorage para pasarlo a "Mi Proyecto" y poder
-      // volver a él —con tu avance— sin base de datos ni cuentas. También
-      // guardamos el diagnóstico (tus respuestas) para poder precargarlo si
-      // vuelves a "Editar mis respuestas" desde Mi Proyecto.
-      localStorage.setItem("plan", JSON.stringify(plan));
-      localStorage.setItem("coach-diagnostico", JSON.stringify(diagnosticoFinal));
-      router.push("/proyecto");
+      const datos = await respuesta.json();
+      if (numero === 1) setParte1(datos);
+      if (numero === 2) setParte2(datos);
+      if (numero === 3) setParte3(datos);
+      setEtapa(numero);
+
+      if (numero === 3) {
+        // Ya están las 3 partes: armamos el Plan completo y seguimos EXACTO
+        // igual que antes (localStorage + redirigir a Mi Proyecto).
+        const planCompleto = { ...parte1, ...parte2, ...datos };
+        localStorage.setItem("plan", JSON.stringify(planCompleto));
+        localStorage.setItem("coach-diagnostico", JSON.stringify(diagnosticoActual));
+        router.push("/proyecto");
+        return; // dejamos "cargando" en true a propósito hasta que cambie de página
+      }
+      setCargando(false);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Algo salió mal.");
       setCargando(false);
@@ -218,6 +258,24 @@ export default function PaginaDiagnostico() {
   }
 
   const esUltimo = paso === TOTAL_PASOS - 1;
+  // Mientras se arma el plan (desde que se manda el diagnóstico hasta que las
+  // 3 partes están listas) se oculta el formulario y se muestra el panel de
+  // generación por etapas en su lugar. OJO: se basa en si YA se envió el
+  // diagnóstico (no en "etapa"/"cargando"), porque si la parte 1 falla, etapa
+  // sigue en 0 y cargando vuelve a false — si el chequeo fuera por esos dos,
+  // el formulario reaparecería en vez de mostrar el error con su reintentar.
+  const mostrarFormulario = diagnosticoEnviado === null;
+  // Si algo falla a medio camino, "reintentar" vuelve a pedir la MISMA parte
+  // que falló (etapa todavía no avanza en un error, así que etapa+1 es
+  // siempre la parte pendiente).
+  const proximaParte = Math.min(etapa + 1, 3) as 1 | 2 | 3;
+
+  function mensajeCarga(): string {
+    if (etapa === 0) return "Tu coach está pensando tu diagnóstico y tu dirección…";
+    if (etapa === 1) return "Tu coach está armando tu ruta, fase por fase…";
+    if (etapa === 2) return "Tu coach está preparando ejemplos y herramientas…";
+    return "¡Ya casi! Preparando tu proyecto…";
+  }
 
   return (
     <RequiereSesion>
@@ -246,6 +304,8 @@ export default function PaginaDiagnostico() {
         )}
       </header>
 
+      {mostrarFormulario && (
+      <>
       {/* Progreso del onboarding */}
       <div className="onboarding-progreso">
         <div className="onboarding-pasos-texto">
@@ -523,14 +583,72 @@ export default function PaginaDiagnostico() {
             </button>
           )}
         </div>
-
-        {cargando && (
-          <>
-            <div className="barra-carga-top" aria-hidden="true" />
-            <ProgresoCarga mensaje="Tu coach está armando tu plan… no cierres la página." />
-          </>
-        )}
       </form>
+      </>
+      )}
+
+      {!mostrarFormulario && (
+        <div className="panel-generacion">
+          {cargando ? (
+            <>
+              <div className="barra-carga-top" aria-hidden="true" />
+              <div className="onboarding-progreso">
+                <div className="onboarding-pasos-texto">
+                  Armando tu plan — parte {Math.min(etapa + 1, 3)} de 3
+                </div>
+                <div
+                  className="onboarding-barra"
+                  role="progressbar"
+                  aria-valuenow={etapa}
+                  aria-valuemin={0}
+                  aria-valuemax={3}
+                >
+                  <div
+                    className="onboarding-relleno"
+                    style={{ width: `${(etapa / 3) * 100}%` }}
+                  />
+                </div>
+              </div>
+              <ProgresoCarga mensaje={mensajeCarga()} />
+            </>
+          ) : error ? (
+            <>
+              <p className="error">
+                <AlertCircle size={16} strokeWidth={2} />
+                {error}
+              </p>
+              <button className="boton" onClick={() => pedirParte(proximaParte)}>
+                Reintentar
+              </button>
+            </>
+          ) : etapa === 1 && parte1 ? (
+            <div className="etapa-lista">
+              <p className="etapa-check">
+                <Check size={16} strokeWidth={2.5} /> Ya tengo tu nicho:{" "}
+                <strong>{parte1.nicho.definicion}</strong>
+              </p>
+              <p className="etapa-check">
+                <Check size={16} strokeWidth={2.5} /> Tu plataforma:{" "}
+                <strong>{parte1.plataforma_principal.red}</strong>,{" "}
+                {parte1.plataforma_principal.formato}
+              </p>
+              <button className="boton" onClick={() => pedirParte(2)}>
+                Ver mi ruta paso a paso <ArrowRight size={18} strokeWidth={2} />
+              </button>
+            </div>
+          ) : etapa === 2 && parte2 ? (
+            <div className="etapa-lista">
+              <p className="etapa-check">
+                <Check size={16} strokeWidth={2.5} /> Ya tengo tu ruta:{" "}
+                {parte2.fases.length} fases, con tus primeros pasos listos
+              </p>
+              <button className="boton" onClick={() => pedirParte(3)}>
+                Ver ejemplos y herramientas <ArrowRight size={18} strokeWidth={2} />
+              </button>
+            </div>
+          ) : null}
+        </div>
+      )}
     </main>
     </RequiereSesion>
   );

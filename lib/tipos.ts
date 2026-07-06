@@ -242,6 +242,28 @@ export interface Plan {
   primer_paso_hoy: string;
 }
 
+// El plan se genera en 3 llamadas más chicas en vez de una sola grande, para
+// que cada una tarde menos y no arriesgue el límite de tiempo de Vercel. Cada
+// "Parte" es un pedazo de Plan (Pick, no una copia) — así, si Plan cambia,
+// estas quedan sincronizadas solas. "fases" queda SOLA en la Parte 2 porque es
+// lo más pesado de generar (varios pasos por fase); aislarla evita que compita
+// por tiempo con el resto del contenido en la misma llamada.
+export type PlanParte1 = Pick<
+  Plan,
+  | "diagnostico_resumen"
+  | "nicho"
+  | "plataforma_principal"
+  | "primer_paso_hoy"
+  | "que_funciona_ahora"
+  | "metricas"
+  | "analisis"
+>;
+export type PlanParte2 = Pick<Plan, "fases">;
+export type PlanParte3 = Pick<
+  Plan,
+  "ejemplos_titulos" | "ejemplos_guiones" | "consejos" | "herramientas" | "expectativa_realista"
+>;
+
 // ── Asistente "tu primer video" ─────────────────────────────────────────────
 // Una idea de video (la IA propone 3; el usuario elige una).
 export interface IdeaVideo {

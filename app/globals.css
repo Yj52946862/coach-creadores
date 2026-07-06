@@ -1141,6 +1141,38 @@ textarea:focus-visible {
   gap: 8px;
 }
 
+/* Panel que reemplaza al formulario mientras se arma el plan en 3 partes. */
+.panel-generacion {
+  padding: 32px 0;
+}
+.etapa-lista {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 14px;
+  animation: aparecer 0.42s var(--ease-out) both;
+}
+.etapa-check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1.02rem;
+  color: var(--texto-suave);
+}
+.etapa-check svg {
+  flex-shrink: 0;
+  color: var(--acento);
+}
+.etapa-check strong {
+  color: var(--texto);
+}
+.etapa-lista .boton {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+}
+
 /* ============================================================
    Motion premium: aparición al hacer scroll (escalonada),
    elevación de tarjetas y glow suave. Sutil, no infantil.

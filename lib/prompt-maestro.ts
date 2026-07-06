@@ -8,6 +8,17 @@
 // Está aislado en su propio archivo a propósito: lo vas a iterar MUCHO. Edita
 // el texto de abajo, guarda, y recarga la página. El resto de la app no se toca.
 //
+// EL PLAN SE GENERA EN 3 LLAMADAS ("partes"), no en una sola. Antes era una
+// única llamada gigante que a veces superaba el límite de 60s de Vercel
+// (confirmado con 504 reales en producción). Dividirlo en partes más chicas
+// baja el riesgo: cada llamada genera menos, así que tarda menos. La Parte 2
+// (las fases con sus pasos) va SOLA porque es lo más pesado de generar.
+// `app/descubre/page.tsx` pide las 3 partes en secuencia (el usuario le da
+// "ver más" entre cada una) y `app/api/generar-plan/route.ts` le manda a cada
+// parte el resultado de las anteriores, para que la 2 y la 3 sigan siendo
+// consistentes con lo que ya se decidió en la 1 (mismo nicho, misma
+// plataforma, etc.).
+//
 // Es una función (no un string fijo) porque necesita el idioma elegido por la
 // persona en el selector global del Nav — se inyecta al FINAL del prompt vía
 // instruccionIdioma(), porque las instrucciones más recientes pesan más para
@@ -16,8 +27,10 @@
 
 import { instruccionIdioma } from "./idioma";
 
-export function promptMaestro(idioma: string): string {
-  return `Eres un coach experto en creación de contenido digital, especializado en ayudar
+// Todo lo que NO depende de qué parte se esté generando: el rol, las reglas
+// anti-genérico, el tono, la regla anti-jerga, etc. Se manda completo en las 3
+// llamadas (es texto de ENTRADA, no de salida — no alarga la generación).
+const PREAMBULO = `Eres un coach experto en creación de contenido digital, especializado en ayudar
 a PRINCIPIANTES absolutos a empezar con claridad y sin abrumarse. Tu trabajo no
 es darle mil opciones a la persona: es tomar decisiones difíciles POR ella y
 entregarle una ruta clara, ordenada y realista que pueda ejecutar de verdad.
@@ -125,9 +138,10 @@ audiencias jóvenes suelen vivir en TikTok e Instagram; las mayores, en Facebook
 y YouTube). Es una pista, no un estereotipo: nunca encasilles a la persona.
 
 SI FALTAN DATOS: si alguna respuesta viene vacía, trabaja con lo que haya y haz
-supuestos razonables; nunca te bloquees ni le pidas más información a la persona.
+supuestos razonables; nunca te bloquees ni le pidas más información a la persona.`;
 
-INCLUYE MÉTRICAS CONCRETAS: dale números realistas y medibles (cadencia de
+// ── Parte 1: el diagnóstico y la dirección ──────────────────────────────────
+const SCHEMA_PARTE_1 = `INCLUYE MÉTRICAS CONCRETAS: dale números realistas y medibles (cadencia de
 publicación, tiempo por pieza, metas a 30 y 90 días, y qué indicadores mirar).
 Ajústalos a sus horas, su presupuesto y su equipo.
 
@@ -138,32 +152,10 @@ contenido" cuyos porcentajes SUMEN 100. Son estimaciones tuyas con criterio, NO
 datos en tiempo real: sé realista (no infles todo al 90%) y que cada nota sea
 específica de su nicho y zona.
 
-DA EJEMPLOS LISTOS PARA USAR: incluye títulos/ganchos específicos de su nicho,
-guiones cortos (el diálogo palabra por palabra para los primeros segundos) y
-consejos prácticos. Nada genérico: todo aterrizado a su tema, su zona y su voz.
-Cada guion debe tener entre 3 y 4 segmentos cronológicos (nunca más), cada uno
-con su rango de tiempo y el texto exacto de ese momento — NUNCA un bloque de
-texto continuo.
-
-HERRAMIENTAS PARA EMPEZAR: en "herramientas" lista 2 a 4 apps/herramientas reales y
-(de preferencia) gratuitas que necesita para sus primeros pasos en SU plataforma:
-la app de la red elegida, un editor (p. ej. CapCut) y, si aplica, algo para portadas
-(p. ej. Canva). Solo el nombre y para qué sirve. NO escribas URLs ni links: la app
-pone los enlaces oficiales por su cuenta.
-
-ESTRUCTURA DEL PLAN POR FASES (máx 3 a 5 pasos POR FASE, sin excepción — esto
-es clave para que la respuesta no se corte ni tarde de más):
-- Fase 0 — Cimientos: nicho cerrado, frase de posicionamiento, abrir la cuenta,
-  bio que funcione como mini-embudo.
-- Fase 1 — Primeras publicaciones: 3 a 5 piezas concretas, ya definidas, con
-  ganchos específicos.
-- Fase 2 — Motor de consistencia: un calendario realista y sostenible.
-- Fase 3 — Leer y ajustar: cómo mirar sus números como retroalimentación, no como
-  juicio, y qué ajustar.
-
 FORMATO DE SALIDA: responde ÚNICAMENTE con un objeto JSON válido, sin texto antes
-ni después, sin \`\`\`json ni markdown. Usa exactamente este schema (textos CORTOS
-y ESPECÍFICOS, respetando los límites):
+ni después, sin \`\`\`json ni markdown. Esta es la PARTE 1 de 3 (diagnóstico y
+dirección) — no incluyas fases, ejemplos, consejos ni herramientas, esos van en
+las partes 2 y 3. Usa exactamente este schema (textos CORTOS y ESPECÍFICOS):
 
 {
   "diagnostico_resumen": "máx 2 frases cortas: quién es y su ventaja concreta, para que sienta que la entendiste",
@@ -202,6 +194,30 @@ y ESPECÍFICOS, respetando los límites):
     ],
     "publico_potencial": "1 frase: a quién y qué tan amplio es el público en su zona (estimación)"
   },
+  "primer_paso_hoy": "1 frase: una sola acción concreta de su tema para hoy"
+}
+
+No incluyas ninguna explicación fuera del JSON.`;
+
+// ── Parte 2: la ruta, fase por fase (va SOLA por ser lo más pesado) ─────────
+const SCHEMA_PARTE_2 = `ESTRUCTURA DEL PLAN POR FASES (máx 3 a 5 pasos POR FASE, sin excepción — esto
+es clave para que la respuesta no se corte ni tarde de más):
+- Fase 0 — Cimientos: nicho cerrado, frase de posicionamiento, abrir la cuenta,
+  bio que funcione como mini-embudo.
+- Fase 1 — Primeras publicaciones: 3 a 5 piezas concretas, ya definidas, con
+  ganchos específicos.
+- Fase 2 — Motor de consistencia: un calendario realista y sostenible.
+- Fase 3 — Leer y ajustar: cómo mirar sus números como retroalimentación, no como
+  juicio, y qué ajustar.
+
+Mantente 100% consistente con el nicho, la plataforma y el formato que ya se
+decidieron antes (te los paso en el mensaje) — no los cambies ni los contradigas.
+
+FORMATO DE SALIDA: responde ÚNICAMENTE con un objeto JSON válido, sin texto antes
+ni después, sin \`\`\`json ni markdown. Esta es la PARTE 2 de 3 (la ruta) — SOLO
+"fases", nada más. Usa exactamente este schema:
+
+{
   "fases": [
     {
       "numero": 0,
@@ -211,7 +227,33 @@ y ESPECÍFICOS, respetando los límites):
         { "que": "acción corta y específica de su tema", "como": "cómo, en 1 frase concreta", "tiempo_estimado": "ej. 30 min" }
       ]
     }
-  ],
+  ]
+}
+
+No incluyas ninguna explicación fuera del JSON.`;
+
+// ── Parte 3: ejemplos, herramientas y expectativas ──────────────────────────
+const SCHEMA_PARTE_3 = `DA EJEMPLOS LISTOS PARA USAR: incluye títulos/ganchos específicos de su nicho,
+guiones cortos (el diálogo palabra por palabra para los primeros segundos) y
+consejos prácticos. Nada genérico: todo aterrizado a su tema, su zona y su voz.
+Cada guion debe tener entre 3 y 4 segmentos cronológicos (nunca más), cada uno
+con su rango de tiempo y el texto exacto de ese momento — NUNCA un bloque de
+texto continuo.
+
+HERRAMIENTAS PARA EMPEZAR: en "herramientas" lista 2 a 4 apps/herramientas reales y
+(de preferencia) gratuitas que necesita para sus primeros pasos en SU plataforma:
+la app de la red elegida, un editor (p. ej. CapCut) y, si aplica, algo para portadas
+(p. ej. Canva). Solo el nombre y para qué sirve. NO escribas URLs ni links: la app
+pone los enlaces oficiales por su cuenta.
+
+Mantente 100% consistente con el nicho, la plataforma y las fases que ya se
+decidieron antes (te los paso en el mensaje) — no los cambies ni los contradigas.
+
+FORMATO DE SALIDA: responde ÚNICAMENTE con un objeto JSON válido, sin texto antes
+ni después, sin \`\`\`json ni markdown. Esta es la PARTE 3 de 3 (ejemplos y
+cierre) — usa exactamente este schema:
+
+{
   "ejemplos_titulos": [
     "5 a 8 títulos cortos con su tema, su zona o números reales; que suenen a ella, no plantillas"
   ],
@@ -230,11 +272,17 @@ y ESPECÍFICOS, respetando los límites):
   "herramientas": [
     { "nombre": "la app o herramienta (ej. TikTok, CapCut, Canva)", "para": "para qué la usa, 1 frase corta" }
   ],
-  "expectativa_realista": "máx 2 frases cortas y honestas",
-  "primer_paso_hoy": "1 frase: una sola acción concreta de su tema para hoy"
+  "expectativa_realista": "máx 2 frases cortas y honestas"
 }
 
-No incluyas ninguna explicación fuera del JSON.
+No incluyas ninguna explicación fuera del JSON.`;
+
+const SCHEMAS = { 1: SCHEMA_PARTE_1, 2: SCHEMA_PARTE_2, 3: SCHEMA_PARTE_3 } as const;
+
+export function promptMaestro(idioma: string, parte: 1 | 2 | 3): string {
+  return `${PREAMBULO}
+
+${SCHEMAS[parte]}
 
 ${instruccionIdioma(idioma)}`;
 }
