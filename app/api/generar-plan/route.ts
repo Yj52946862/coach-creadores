@@ -44,13 +44,19 @@ export async function POST(request: Request) {
     // 3) La llamada al cerebro: system = reglas del coach, user = el diagnóstico.
     //    "adaptive" (sin más) dejaba a Claude decidir cuánto pensar sin tope,
     //    lo cual midió entre 30s y 80s+ en pruebas reales — por encima del
-    //    límite de 60s de Vercel Hobby (confirmado con 504 en producción).
-    //    Este modelo exige "adaptive" (no admite budget_tokens fijo — lo
-    //    confirmó la propia API al rechazar ese intento), así que se acota el
-    //    esfuerzo con output_config.effort en vez de un tope de tokens.
+    //    límite de 60s de Vercel Hobby (confirmado con 504 en producción, dos
+    //    veces más incluso con effort:"low" — el margen real era de segundos,
+    //    no bastaba). Este modelo exige "adaptive" (no admite budget_tokens
+    //    fijo — lo confirmó la propia API al rechazar ese intento), así que se
+    //    acota el esfuerzo con output_config.effort. max_tokens se bajó de
+    //    16000 a 10000: con el schema ya recortado (menos pasos por fase,
+    //    ejemplos_guiones limitado a 2) un plan completo real pesa bien menos
+    //    que eso, así que esto es solo una red de seguridad — si algo se
+    //    saliera de control, corta rápido con nuestro propio mensaje de error
+    //    en vez de arriesgar un 504 silencioso al llegar a los 60s.
     const respuesta = await anthropic.messages.create({
       model: "claude-opus-4-8",
-      max_tokens: 16000,
+      max_tokens: 10000,
       thinking: { type: "adaptive" },
       output_config: { effort: "low" },
       system: promptMaestro(diagnostico.idioma || "es"),

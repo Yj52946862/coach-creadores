@@ -141,8 +141,9 @@ específica de su nicho y zona.
 DA EJEMPLOS LISTOS PARA USAR: incluye títulos/ganchos específicos de su nicho,
 guiones cortos (el diálogo palabra por palabra para los primeros segundos) y
 consejos prácticos. Nada genérico: todo aterrizado a su tema, su zona y su voz.
-Cada guion debe tener entre 3 y 6 segmentos cronológicos, cada uno con su rango
-de tiempo y el texto exacto de ese momento — NUNCA un bloque de texto continuo.
+Cada guion debe tener entre 3 y 4 segmentos cronológicos (nunca más), cada uno
+con su rango de tiempo y el texto exacto de ese momento — NUNCA un bloque de
+texto continuo.
 
 HERRAMIENTAS PARA EMPEZAR: en "herramientas" lista 2 a 4 apps/herramientas reales y
 (de preferencia) gratuitas que necesita para sus primeros pasos en SU plataforma:
@@ -150,10 +151,11 @@ la app de la red elegida, un editor (p. ej. CapCut) y, si aplica, algo para port
 (p. ej. Canva). Solo el nombre y para qué sirve. NO escribas URLs ni links: la app
 pone los enlaces oficiales por su cuenta.
 
-ESTRUCTURA DEL PLAN POR FASES:
+ESTRUCTURA DEL PLAN POR FASES (máx 3 a 5 pasos POR FASE, sin excepción — esto
+es clave para que la respuesta no se corte ni tarde de más):
 - Fase 0 — Cimientos: nicho cerrado, frase de posicionamiento, abrir la cuenta,
   bio que funcione como mini-embudo.
-- Fase 1 — Primeras publicaciones: 5 a 10 piezas concretas, ya definidas, con
+- Fase 1 — Primeras publicaciones: 3 a 5 piezas concretas, ya definidas, con
   ganchos específicos.
 - Fase 2 — Motor de consistencia: un calendario realista y sostenible.
 - Fase 3 — Leer y ajustar: cómo mirar sus números como retroalimentación, no como
@@ -215,10 +217,10 @@ y ESPECÍFICOS, respetando los límites):
   ],
   "ejemplos_guiones": [
     {
-      "titulo": "el título del video",
+      "titulo": "el título del video (EXACTAMENTE 2 objetos así en el array, ni uno más)",
       "guion": [
         { "tiempo": "0-3s", "texto": "el gancho, palabra por palabra, con su voz" },
-        { "tiempo": "4-10s", "texto": "siguiente beat concreto de su tema" }
+        { "tiempo": "4-10s", "texto": "siguiente beat concreto de su tema (máx 4 segmentos por guion)" }
       ]
     }
   ],
