@@ -11,10 +11,10 @@
 import { promptIdeas, promptDetalle } from "@/lib/prompt-asistente";
 import { anthropic, extraerJSON, mensajeDeError } from "@/lib/ia-utils";
 
-// Sin esto, Vercel corta la función a los 10s por defecto (Hobby) y esta
-// llamada (Opus + thinking adaptativo) puede tardar más. 60 es el máximo del
-// plan Hobby.
-export const maxDuration = 60;
+// Sin esto, Vercel corta la función a los 10s por defecto. Con Vercel Pro,
+// subimos el tope a 300s (antes 60, el máximo del plan Hobby) como margen
+// real contra el 504 que sí se confirmó en producción para /api/generar-plan.
+export const maxDuration = 300;
 
 export async function POST(request: Request) {
   if (!process.env.ANTHROPIC_API_KEY) {

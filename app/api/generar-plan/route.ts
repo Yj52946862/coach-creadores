@@ -21,10 +21,13 @@ import { promptMaestro } from "@/lib/prompt-maestro";
 import { anthropic, extraerJSON, mensajeDeError } from "@/lib/ia-utils";
 import type { Diagnostico } from "@/lib/tipos";
 
-// Sin esto, Vercel corta la función a los 10s por defecto (Hobby). 60 es el
-// máximo del plan Hobby; con el plan dividido en partes, cada llamada real
-// mide bastante menos que eso (ver prompt-maestro.ts para el detalle).
-export const maxDuration = 60;
+// Sin esto, Vercel corta la función a los 10s por defecto. Con el plan
+// dividido en partes, cada llamada real ya mide bastante menos de 60s (ver
+// prompt-maestro.ts para el detalle) — pero ahora que el proyecto está en
+// Vercel Pro, subimos el tope a 300s de todos modos, como red de seguridad
+// real contra el 504 que sí llegamos a confirmar en producción con el plan
+// Hobby (300 es el máximo permitido sin configuración extra en Pro).
+export const maxDuration = 300;
 
 type Cuerpo = {
   diagnostico?: Diagnostico;

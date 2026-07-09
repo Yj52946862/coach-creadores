@@ -1,11 +1,16 @@
 // ============================================================================
 // app/layout.tsx — El "marco" que envuelve a TODAS las páginas.
 // Carga Geist (una tipografía moderna y premium) y la deja disponible para toda
-// la app por la variable --font-geist.
+// la app por la variable --font-geist. También monta <Analytics />
+// (@vercel/analytics): un script liviano que manda visitas/páginas vistas al
+// dashboard de Vercel (pestaña "Analytics" del proyecto) — sin cookies, sin
+// configuración adicional en el código. Si no ves datos ahí, puede que haga
+// falta activarlo una vez desde el dashboard (Project → Analytics → Enable).
 // ============================================================================
 
 import type { Metadata } from "next";
 import { Geist } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 import Nav from "./Nav";
 import Footer from "./Footer";
@@ -30,6 +35,7 @@ export default function RootLayout({
         <Nav />
         {children}
         <Footer />
+        <Analytics />
       </body>
     </html>
   );
